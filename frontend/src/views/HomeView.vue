@@ -1,15 +1,19 @@
 <template>
-  <hello-world />
+  <div class="pageColor">Hello world</div>
 </template>
 
 <script>
-  import HelloWorld from '../components/HelloWorld'
+export default {
+  name: "Home",
 
-  export default {
-    name: 'Home',
-
-    components: {
-      HelloWorld,
-    },
-  }
+  components: {},
+};
 </script>
+
+<style scoped>
+.pageColor {
+  background-color: rgb(78, 78, 78);
+  min-height: 100%;
+  color: white;
+}
+</style>
