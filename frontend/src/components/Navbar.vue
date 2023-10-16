@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-app-bar app class="navbar-color" dark height="100">
+    <v-app-bar
+      app
+      class="white--text"
+      height="100"
+      style="background-color: rgb(95, 95, 95)"
+    >
       <div class="d-flex align-center">
         <h1>ToxicGuys</h1>
       </div>
@@ -10,26 +15,32 @@
       <!-- signed in -->
       <div v-if="$store.state.user.accessToken != null">
         <v-btn text>
-          <span class="text-capitalize mr-1">Messages</span>
+          <span class="text-capitalize mr-1 white--text">Messages</span>
           <i class="fas fa-comments"></i>
         </v-btn>
         <v-btn text>
-          <span class="text-capitalize mr-1">Groups</span>
+          <span class="text-capitalize mr-1 white--text">Groups</span>
           <i class="fas fa-users"></i>
         </v-btn>
         <v-btn text>
-          <span class="text-capitalize mr-1">Anonymous</span>
+          <span class="text-capitalize mr-1 white--text">Anonymous</span>
           <i class="fas fa-question"></i>
         </v-btn>
         <v-btn text>
-          <span class="text-capitalize mr-1">Sign Out</span>
+          <span class="text-capitalize mr-1 white--text">Sign Out</span>
           <i class="fas fa-sign-out-alt"></i>
         </v-btn>
       </div>
       <!-- not signed in -->
-      <div v-else>
+      <div
+        v-if="$store.state.user.accessToken == null && $route.name != 'SignIn'"
+      >
         <v-btn text>
-          <span class="text-capitalize">Sign In</span>
+          <span
+            class="text-capitalize white--text"
+            @click="$router.push({ name: 'SignIn' })"
+            >Sign In
+          </span>
         </v-btn>
       </div>
     </v-app-bar>
@@ -45,6 +56,5 @@ export default {
 <style scoped>
 .navbar-color {
   background-color: rgb(95, 95, 95);
-  color: white;
 }
 </style>

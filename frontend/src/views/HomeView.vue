@@ -1,5 +1,5 @@
 <template>
-  <div class="pageColor">Hello world</div>
+  <div>Hello world</div>
 </template>
 
 <script>
@@ -11,9 +11,4 @@ export default {
 </script>
 
 <style scoped>
-.pageColor {
-  background-color: rgb(78, 78, 78);
-  min-height: 100%;
-  color: white;
-}
 </style>
