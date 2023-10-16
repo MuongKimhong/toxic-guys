@@ -35,7 +35,6 @@
     "vuetify-loader": "^1.7.0"
   },
   "eslintConfig": {
-    "vue/multi-word-component-names": true,
     "root": true,
     "env": {
       "node": true
@@ -47,7 +46,9 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
-    "rules": {}
+    "rules": {
+      "vue/multi-word-component-names": true
+    }
   },
   "browserslist": [
     "> 1%",
