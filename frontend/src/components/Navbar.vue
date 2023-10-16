@@ -23,12 +23,12 @@
           <i class="fas fa-comments white--text"></i>
         </v-btn>
         <v-btn text>
-          <span class="text-capitalize mr-1 white--text">Groups</span>
-          <i class="fas fa-users white--text"></i>
-        </v-btn>
-        <v-btn text>
           <span class="text-capitalize mr-1 white--text">Anonymous</span>
           <i class="fas fa-question white--text"></i>
+        </v-btn>
+        <v-btn text>
+          <span class="text-capitalize mr-1 white--text">Profile</span>
+          <i class="fas fa-user-circle white--text"></i>
         </v-btn>
         <v-btn text>
           <span class="text-capitalize mr-1 white--text">Sign Out</span>
