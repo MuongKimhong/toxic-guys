@@ -26,7 +26,7 @@
           <span class="text-capitalize mr-1 white--text">Anonymous</span>
           <i class="fas fa-question white--text"></i>
         </v-btn>
-        <v-btn text>
+        <v-btn text @click="$router.push({ name: 'Profile' })">
           <span class="text-capitalize mr-1 white--text">Profile</span>
           <i class="fas fa-user-circle white--text"></i>
         </v-btn>

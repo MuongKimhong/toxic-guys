@@ -6,6 +6,7 @@ import SignIn from "../views/SignIn.vue";
 import SignUp from "../views/SignUp.vue";
 
 import Home from '../views/Home.vue';
+import Profile from "../views/Profile.vue";
 import Messages from "../views/Messages.vue";
 
 Vue.use(VueRouter)
@@ -20,6 +21,15 @@ const routes = [
     path: "/messages",
     name: "Messages",
     component: Messages,
+    beforeEnter: (to, from, next) => {
+      if (store.state.user.accessToken == null) next({ name: 'SignIn' });
+      else next();
+    },
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
     beforeEnter: (to, from, next) => {
       if (store.state.user.accessToken == null) next({ name: 'SignIn' });
       else next();

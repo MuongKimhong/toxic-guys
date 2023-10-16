@@ -28,7 +28,7 @@
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="showPassword = !showPassword"
               >
-                > ></v-text-field
+                </v-text-field
               >
             </div>
 
