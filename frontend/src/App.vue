@@ -2,7 +2,7 @@
   <v-app>
     <Navbar />
 
-    <v-main>
+    <v-main class="pageColor">
       <router-view />
     </v-main>
   </v-app>
@@ -23,3 +23,11 @@ export default {
   }),
 };
 </script>
+
+<style>
+.pageColor {
+  background-color: rgb(78, 78, 78);
+  min-height: 100%;
+  color: white;
+}
+</style>
