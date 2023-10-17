@@ -18,21 +18,21 @@
 
       <!-- signed in -->
       <div v-if="$store.state.user.accessToken != null">
-        <v-btn text>
+        <v-btn text @click="$router.push({ name: 'Messages' })">
           <span class="text-capitalize mr-1 white--text">Messages</span>
-          <i class="fas fa-comments"></i>
+          <i class="fas fa-comments white--text"></i>
         </v-btn>
         <v-btn text>
           <span class="text-capitalize mr-1 white--text">Groups</span>
-          <i class="fas fa-users"></i>
+          <i class="fas fa-users white--text"></i>
         </v-btn>
         <v-btn text>
           <span class="text-capitalize mr-1 white--text">Anonymous</span>
-          <i class="fas fa-question"></i>
+          <i class="fas fa-question white--text"></i>
         </v-btn>
         <v-btn text>
           <span class="text-capitalize mr-1 white--text">Sign Out</span>
-          <i class="fas fa-sign-out-alt"></i>
+          <i class="fas fa-sign-out-alt white--text"></i>
         </v-btn>
       </div>
       <!-- not signed in -->
