@@ -2,9 +2,11 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store/index';
 
-import Home from '../views/Home.vue'
 import SignIn from "../views/SignIn.vue";
 import SignUp from "../views/SignUp.vue";
+
+import Home from '../views/Home.vue';
+import Messages from "../views/Messages.vue";
 
 Vue.use(VueRouter)
 
@@ -13,6 +15,15 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: "/messages",
+    name: "Messages",
+    component: Messages,
+    beforeEnter: (to, from, next) => {
+      if (store.state.user.accessToken == null) next({ name: 'SignIn' });
+      else next();
+    },
   },
   {
     path: "/sign-in",
