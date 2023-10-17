@@ -9,7 +9,7 @@
               <v-card
                 class="d-flex flex-column"
                 style="
-                  background-color: white;
+                  background-color: rgb(78, 78, 78);
                   width: 100%;
                   border-radius: 0;
                   padding: 5px;

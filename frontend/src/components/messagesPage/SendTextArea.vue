@@ -1,5 +1,5 @@
 <template>
-  <v-card-actions style="background-color: rgb(95, 95, 95)">
+  <v-card-actions style="background-color: rgb(78, 78, 78)">
     <span class="mr-2">
       <i
         class="fas fa-images white--text"
