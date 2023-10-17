@@ -8,11 +8,11 @@
               <v-navigation-drawer
                 permanent
                 style="background-color: rgb(95, 95, 95); height: 800px"
-                id="navigation-drawer"
+                class="navigation-drawer"
               >
                 <v-list density="compact" nav>
                   <v-list-item
-                    v-for="(i, index) in 20"
+                    v-for="(i, index) in 12"
                     :key="index"
                     class="user-list pb-1"
                   >
@@ -59,18 +59,5 @@ export default {
 }
 .user-list:hover {
   background-color: rgb(100, 100, 100);
-}
-
-#navigation-drawer::-webkit-scrollbar {
-  width: 20px;
-}
-#navigation-drawer::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-#navigation-drawer::-webkit-scrollbar-thumb {
-  background-color: #d6dee1;
-  border-radius: 20px;
-  border: 6px solid transparent;
-  background-clip: content-box;
 }
 </style>
