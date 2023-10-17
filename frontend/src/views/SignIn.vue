@@ -43,8 +43,13 @@
               <div class="mt-4">
                 <small>
                   Need an account?
-                  <a @click="stop" style="color: white">Sign Up</a></small
-                >
+                  <a
+                    @click="$router.push({ name: 'SignUp' })"
+                    style="color: white"
+                  >
+                    Sign Up
+                  </a>
+                </small>
               </div>
             </div>
           </v-card>
