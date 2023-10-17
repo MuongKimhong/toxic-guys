@@ -48,5 +48,6 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
-  }
+  },
+  plugins: [vuexLocal.plugin]
 })
