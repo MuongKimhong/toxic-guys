@@ -5,15 +5,7 @@
       <div class="mt-10">
         <SearchUser />
 
-        <hr
-          style="
-            height: 1px;
-            background-color: grey;
-            border: none;
-            margin-top: 50px;
-            margin-bottom: 50px;
-          "
-        />
+        <hr class="hr-element" />
 
         <div>
           <h1 class="text-center mb-5">Explore public groups</h1>
@@ -28,6 +20,32 @@
             <GroupCard />
           </v-row>
         </div>
+      </div>
+    </div>
+
+    <!-- signed in -->
+    <div v-else>
+      <div class="mt-10">
+        <h1 class="text-center mb-5">Public groups</h1>
+        <v-row justify="space-around">
+          <GroupCard />
+          <GroupCard />
+          <GroupCard />
+          <GroupCard />
+        </v-row>
+      </div>
+
+      <hr class="hr-element" />
+
+      <div class="mt-10">
+        <h1 class="text-center mb-5">Your groups</h1>
+        <v-row justify="space-around">
+          <GroupCard />
+          <GroupCard />
+          <GroupCard />
+          <GroupCard />
+          <GroupCard />
+        </v-row>
       </div>
     </div>
   </v-container>
@@ -48,4 +66,11 @@ export default {
 </script>
 
 <style scoped>
+.hr-element {
+  background-color: grey;
+  height: 1px;
+  border: none;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
 </style>
