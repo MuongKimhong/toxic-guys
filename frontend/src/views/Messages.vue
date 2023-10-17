@@ -15,7 +15,7 @@
                   padding: 5px;
                 "
               >
-                <v-card-title>kasj</v-card-title>
+                <UserDetailNavbar />
                 <v-card-text>;lkasjdf</v-card-text>
                 <v-spacer></v-spacer>
                 <SendTextArea />
@@ -30,12 +30,14 @@
 
 <script>
 import UserListInMessagePage from "../components/messagesPage/UserListInMessagePage.vue";
+import UserDetailNavbar from "../components/messagesPage/UserDetailNavbar.vue";
 import SendTextArea from "../components/messagesPage/SendTextArea.vue";
 
 export default {
   name: "Messages",
   components: {
     UserListInMessagePage,
+    UserDetailNavbar,
     SendTextArea,
   },
   methods: {
