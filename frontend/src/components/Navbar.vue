@@ -35,12 +35,8 @@
       <div
         v-if="$store.state.user.accessToken == null && $route.name != 'SignIn'"
       >
-        <v-btn text>
-          <span
-            class="text-capitalize white--text"
-            @click="$router.push({ name: 'SignIn' })"
-            >Sign In
-          </span>
+        <v-btn text @click="$router.push({ name: 'SignIn' })">
+          <span class="text-capitalize white--text">Sign In </span>
         </v-btn>
       </div>
     </v-app-bar>
