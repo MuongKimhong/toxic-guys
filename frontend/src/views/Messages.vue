@@ -6,17 +6,9 @@
           <v-card class="px-0 py-0 white--text message-card d-flex">
             <v-layout>
               <UserListInMessagePage />
-              <v-card
-                class="d-flex flex-column"
-                style="
-                  background-color: rgb(78, 78, 78);
-                  width: 100%;
-                  border-radius: 0;
-                  padding: 5px;
-                "
-              >
+              <v-card class="d-flex flex-column message-area">
                 <UserDetailNavbar />
-                <v-card-text>;lkasjdf</v-card-text>
+                <MessageTextArea />
                 <v-spacer></v-spacer>
                 <SendTextArea />
               </v-card>
@@ -31,6 +23,7 @@
 <script>
 import UserListInMessagePage from "../components/messagesPage/UserListInMessagePage.vue";
 import UserDetailNavbar from "../components/messagesPage/UserDetailNavbar.vue";
+import MessageTextArea from "../components/messagesPage/MessageTextArea.vue";
 import SendTextArea from "../components/messagesPage/SendTextArea.vue";
 
 export default {
@@ -38,6 +31,7 @@ export default {
   components: {
     UserListInMessagePage,
     UserDetailNavbar,
+    MessageTextArea,
     SendTextArea,
   },
   methods: {
@@ -51,5 +45,11 @@ export default {
   background-color: rgb(95, 95, 95);
   border-radius: 5px;
   height: 800px;
+}
+.message-area {
+  background-color: rgb(78, 78, 78);
+  width: 100%;
+  border-radius: 0;
+  padding: 5px;
 }
 </style>
