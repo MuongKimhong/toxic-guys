@@ -6,7 +6,11 @@
       height="100"
       style="background-color: rgb(95, 95, 95)"
     >
-      <div class="d-flex align-center">
+      <div
+        class="d-flex align-center"
+        @click="$router.push({ name: 'Home' })"
+        style="cursor: pointer"
+      >
         <h1>ToxicGuys</h1>
       </div>
 

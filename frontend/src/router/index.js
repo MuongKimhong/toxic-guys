@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store/index';
 
-import HomeView from '../views/HomeView.vue'
+import Home from '../views/Home.vue'
 import SignIn from "../views/SignIn.vue";
 import SignUp from "../views/SignUp.vue";
 
@@ -12,7 +12,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: HomeView
+    component: Home
   },
   {
     path: "/sign-in",
