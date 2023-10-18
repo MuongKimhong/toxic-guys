@@ -2,7 +2,12 @@
   <v-container fill-height>
     <v-row align="center" justify-content="center">
       <v-col cols="12" class="mr-auto ml-auto">
-        <div>
+        <div class="text-right">
+          <v-btn small class="green text-capitalize white--text">
+            New group
+          </v-btn>
+        </div>
+        <div class="mt-5">
           <v-card class="px-0 py-0 white--text message-card d-flex">
             <v-layout>
               <UserListInMessagePage />
