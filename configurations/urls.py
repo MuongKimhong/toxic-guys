@@ -4,6 +4,7 @@ from django.conf import settings
 
 urlpatterns = [
     path("api-users/", include("users.urls")),
+    path("api-groups/", include("groups.urls"))
 ]
 
 if settings.DEBUG is True:
