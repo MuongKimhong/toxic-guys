@@ -17,7 +17,7 @@ export default new Vuex.Store({
       username: null,
       profileUrl: null,
       acceptAnonymousMessage: null,
-      accessToken: "null"
+      accessToken: null
     }
   },
   getters: {

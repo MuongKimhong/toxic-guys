@@ -9,6 +9,10 @@ axios.defaults.baseURL = "http://localhost:8000/"
 
 Vue.config.productionTip = false
 
+Vue.prototype.$authenticateUser = function () {
+  console.log("authenticate user");
+}
+
 new Vue({
   router,
   store,
