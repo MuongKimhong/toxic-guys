@@ -16,6 +16,8 @@
                 label="username"
                 dark
                 outlined
+                v-model="username"
+                :error-messages="errorMessage"
               ></v-text-field>
               <v-text-field
                 password
@@ -27,15 +29,17 @@
                 :type="showPassword ? 'text' : 'password'"
                 :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="showPassword = !showPassword"
+                v-model="password"
+                :error-messages="errorMessage"
               >
-                </v-text-field
-              >
+              </v-text-field>
             </div>
 
             <div class="mt-5 text-center mr-auto ml-auto">
               <v-btn
                 class="text-capitalize white--text"
                 style="background-color: rgb(78, 78, 78)"
+                @click="signIn()"
               >
                 Sign In
               </v-btn>
@@ -65,7 +69,31 @@ export default {
 
   data: () => ({
     showPassword: false,
+
+    username: "",
+    password: "",
+    errorMessage: "",
   }),
+
+  methods: {
+    signIn: async function () {
+      this.errorMessage = "";
+
+      if (this.username.trim() === "" || this.password.trim() === "") {
+        this.errorMessage = "Please enter username and password";
+      }
+
+      let response = await this.$authenticateUser(this.username, this.password);
+
+      if (response === false) {
+        this.errorMessage = "Username or password is incorrect";
+
+        setTimeout(() => {
+          this.errorMessage = "";
+        }, 2000);
+      }
+    },
+  },
 };
 </script>
 

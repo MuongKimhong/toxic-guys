@@ -9,8 +9,25 @@ axios.defaults.baseURL = "http://localhost:8000/"
 
 Vue.config.productionTip = false
 
-Vue.prototype.$authenticateUser = function () {
-  console.log("authenticate user");
+Vue.prototype.$authenticateUser = async function (username, password) {
+  try {
+    let response = await axios.post("api-users/sign-in/", {
+      username: username,
+      password: password
+    });
+
+    store.commit("updateUserCredential", response.data);
+
+    // make sure store.commit finish operation
+    setTimeout(() => {
+      router.push({ name: "Home" })
+    }, 200)
+
+    return true;
+
+  } catch (error) {
+    if (error.response) return false;
+  }
 }
 
 new Vue({

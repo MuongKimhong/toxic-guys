@@ -151,9 +151,15 @@ export default {
           password: this.password,
           confirm_password: this.confirmPassword,
         })
-        .then((res) => {
+        .then(async (res) => {
           if (res.data["signup_success"]) {
-            this.$authenticateUser(); // global function in main.js
+            // global function in main.js
+            let response = await this.$authenticateUser(
+              this.username,
+              this.password
+            );
+
+            if (response === false) this.$router.push({ name: "SignIn" });
           }
         })
         .catch((err) => {

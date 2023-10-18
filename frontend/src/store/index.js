@@ -24,10 +24,10 @@ export default new Vuex.Store({
   },
   mutations: {
     updateUserCredential(state, credential) {
-      state.user.id = credential.id;
-      state.user.username = credential.username;
-      state.user.profileUrl = credential.profile_url;
-      state.user.acceptAnonymousMessage = credential.accept_anonymous_message;
+      state.user.id = credential.user.id;
+      state.user.username = credential.user.username;
+      state.user.profileUrl = credential.user.profile_url;
+      state.user.acceptAnonymousMessage = credential.user.accept_anonymous_message;
       state.user.accessToken = credential.access_token;
     },
 

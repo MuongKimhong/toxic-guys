@@ -30,7 +30,7 @@
           <span class="text-capitalize mr-1 white--text">Profile</span>
           <i class="fas fa-user-circle white--text"></i>
         </v-btn>
-        <v-btn text>
+        <v-btn text @click="signOut()">
           <span class="text-capitalize mr-1 white--text">Sign Out</span>
           <i class="fas fa-sign-out-alt white--text"></i>
         </v-btn>
@@ -50,6 +50,13 @@
 <script>
 export default {
   name: "Navbar",
+
+  methods: {
+    signOut: function () {
+      this.$store.commit("deleteUserCredential");
+      this.$router.push({ name: "SignIn" });
+    },
+  },
 };
 </script>
 
