@@ -120,3 +120,23 @@ class UpdateEmailAndUsername(APIView):
         user.save()
 
         return Response({"success": True}, status=200)
+
+
+class ChangePassword(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        try:
+            user = User.objects.get(id=token_verification(request))
+        except User.DoesNotExist:
+            return Response({"error": True}, status=400)
+        
+        if check_password(request.data["old_password"], user.password) is False:
+            return Response({"old_password_error": "Incorrect old password"}, status=400)
+
+        if check_password_strong(request.data["new_password"]) is False:
+            return Response({"weak_password": "Password must contains 8 char and 1 uppercase"}, status=400)
+
+        user.password = make_password(request.data["new_password"])
+        user.save()
+        return Response({"success": True}, status=200)
