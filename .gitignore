@@ -2,3 +2,4 @@ node_modules
 __pycache__
 media
 virtual_environment
+db.sqlite3
