@@ -20,7 +20,7 @@ def check_password_strong(password):
     length_check       = False
     uppercase_check    = False
 
-    if len(str(password)) > 8: length_check = True
+    if len(str(password)) >= 8: length_check = True
     
     # if string consists of one upper case
     for char in str(password):
@@ -76,7 +76,7 @@ class SignIn(APIView):
         except User.DoesNotExist:
             return Response({"error": True}, status=400)
 
-        if check_password(data["password"], user.password) is False:
+        if check_password(request.data["password"], user.password) is False:
             return Response({"error": True}, status=400)
 
         return Response(get_token(user, request), status=200)

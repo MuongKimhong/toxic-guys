@@ -10,7 +10,7 @@ def profile_url(profile):
 
 
 def date_format(date):
-    return date.strftime(""%d/%b/%Y - %I:%M %p"")
+    return date.strftime("%d/%b/%Y - %I:%M %p")
 
 
 class User(AbstractUser):
@@ -28,14 +28,15 @@ class User(AbstractUser):
             "id": self.id,
             "email": self.email,
             "username": self.username,
-            "profile" : profile_url(self.profile),
-            "created_date": date_format(self.created_date)
+            "profile_url" : profile_url(self.profile),
+            "created_date": date_format(self.created_date),
+            "accept_anonymous_message": self.accept_anonymous_message
         }
 
 
 class UserConnection(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    connection = models.ForeignKey(User, on_delete=models.CASCADE) # friend
+    connection = models.ForeignKey(User, related_name="friend", on_delete=models.CASCADE) # friend
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
