@@ -24,6 +24,16 @@ def check_password_strong(password):
     return False if ((length_check is False) or (uppercase_check is False)) else True
 
 
+def get_token(user, request):
+    refresh_token = RefreshToken.for_user(user) 
+    access_token  = refresh_token.access_token
+    return {
+        'user': user.serialize(),
+        'refresh_token': str(refresh_token),
+        'access_token' : str(access_token)
+    }
+
+
 class SignUp(APIView):
     permission_classes = [ AllowAny ]
 
@@ -48,3 +58,18 @@ class SignUp(APIView):
             password = make_password(data["password"])
         )
         return Response({"signup_success": True}, status=200)
+
+
+class SignIn(APIView):
+    permission_classes = [ AllowAny ]
+
+    def post(self, request):
+        try:
+            user = User.objects.get(username=request.data["username"])
+        except User.DoesNotExist:
+            return Response({"error": True}, status=400)
+
+        if check_password(data["password"], user.password) is False:
+            return Response({"error": True}, status=400)
+
+        return Response(get_token(user, request), status=200)
