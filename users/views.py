@@ -96,3 +96,27 @@ class ChangeUserProfile(APIView):
         user.profile = profile
         user.save()  
         return Response({"profile": user.serialize()['profile']}, status=200)
+
+
+class UpdateEmailAndUsername(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        try:
+            user = User.objects.get(id=token_verification(request))
+        except User.DoesNotExist:
+            return Response({"error": True}, status=400)      
+
+        if user.email != request.data["email"]:
+            if User.objects.filter(email=request.data["email"]).exists():
+                return Response({"email_error": "Email is already taken"}, status=400)
+
+        if user.username != request.data["username"]:
+            if User.objects.filter(username=request.data["username"]).exists():
+                return Response({"username_error": "Username is already taken"}, status=400)
+
+        user.email = request.data["email"]
+        user.username = request.data["username"]
+        user.save()
+
+        return Response({"success": True}, status=200)
