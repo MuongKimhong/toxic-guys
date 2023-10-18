@@ -9,6 +9,13 @@ import jwt
 from users.models import *
 
 
+def token_verification(request):
+    token = str(request.META.get("HTTP_AUTHORIZATION"))[7:]
+    decoded = jwt.decode(token, options={"verify_signature": False})
+    user = User.objects.get(id=int(decoded.get('user_id')))
+    return user.id
+
+
 def check_password_strong(password):
     length_check       = False
     uppercase_check    = False
@@ -73,3 +80,19 @@ class SignIn(APIView):
             return Response({"error": True}, status=400)
 
         return Response(get_token(user, request), status=200)
+
+
+class ChangeUserProfile(APIView):
+    permission_classes = [ IsAuthenticated ]
+    parser_classes = [ parsers.MultiPartParser ]
+
+    def post(self, request):
+        profile = request.data["profile"]
+        try:
+            user = User.objects.get(id=token_verification(request))
+        except User.DoesNotExist:
+            return Response({"error": True}, status=400)
+
+        user.profile = profile
+        user.save()  
+        return Response({"profile": user.serialize()['profile']}, status=200)
