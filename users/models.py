@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db import models
 
+import uuid
+
 
 def profile_url(profile):
     return f"{settings.FULL_DOMAIN_PATH}{profile.url}" if profile else ""
@@ -43,5 +45,37 @@ class UserConnection(models.Model):
         return {
             "user": self.user.serialize(),
             "connection": self.connection.serialize(),
+            "created_date": date_format(self.created_date)
+        }
+
+
+class AnonymousUser(models.Model):
+    _id = models.CharField(max_length=20, blank=True) #uid
+    username = models.CharField(max_length=100, unique=True)
+    ip_address = models.CharField(max_length=50)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self._id} - {self.username} - {self.ip_address}"
+    
+    def generate_uid(self):
+        uniqe_uid = str(uuid.uuid4())[:8]
+
+        if AnonymousUser.objects.filter(_id=uniqe_uid).exists(): self.generate_uid()
+
+        return uniqe_uid
+
+    def save(self, *args, **kwargs):
+        if self._id == "":
+            self._id = self.generate_uid()
+        
+        super(AnonymousUser, self).save(*args, **kwargs)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "_id": self._id,
+            "username": self.username,
+            "ip_address": self.ip_address,
             "created_date": date_format(self.created_date)
         }
