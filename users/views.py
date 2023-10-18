@@ -6,4 +6,45 @@ from rest_framework.views import APIView
 from rest_framework import parsers
 import jwt
 
+from users.models import *
 
+
+def check_password_strong(password):
+    length_check       = False
+    uppercase_check    = False
+
+    if len(str(password)) > 8: length_check = True
+    
+    # if string consists of one upper case
+    for char in str(password):
+        if char.isupper():
+            uppercase_check = True
+            break             
+
+    return False if ((length_check is False) or (uppercase_check is False)) else True
+
+
+class SignUp(APIView):
+    permission_classes = [ AllowAny ]
+
+    def post(self, request):
+        data = request.data
+
+        if data["password"] != data["confirm_password"]:
+            return Response({"two_password_not_match": True}, status=400)
+        
+        if User.objects.filter(email=data["email"]).exists() is True:
+            return Response({"email_taken": True}, status=400)
+
+        if User.objects.filter(username=data["username"]).exists() is True:
+            return Response({"username_taken": True}, status=400)
+
+        if check_password_strong(data["password"]) is False:
+            return Response({"weak_password": "Password must contains 8 char and 1 uppercase"}, status=400)
+
+        User.objects.create(
+            email = data["email"],
+            username = data["username"],
+            password = make_password(data["password"])
+        )
+        return Response({"signup_success": True}, status=200)
