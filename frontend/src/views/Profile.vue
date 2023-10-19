@@ -25,6 +25,8 @@
               label="Username"
               dark
               outlined
+              v-model="username"
+              :error-messages="errUsername"
             ></v-text-field>
             <v-text-field
               class="my-2"
@@ -32,6 +34,8 @@
               label="Email address"
               dark
               outlined
+              v-model="email"
+              :error-messages="errEmail"
             ></v-text-field>
 
             <div>
@@ -39,6 +43,7 @@
                 small
                 class="white--text text-capitalize"
                 style="background-color: rgb(95, 95, 95)"
+                @click="updateUsernameAndEmail()"
               >
                 Update
               </v-btn>
@@ -105,12 +110,69 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Profile",
 
   data: () => ({
     showPassword: false,
+
+    username: "",
+    email: "",
+
+    errUsername: "",
+    errEmail: "",
   }),
+
+  created() {
+    this.email = this.$store.state.user.email;
+    this.username = this.$store.state.user.username;
+  },
+
+  methods: {
+    updateUsernameAndEmail: function () {
+      this.errUsername = "";
+      this.errEmail = "";
+
+      if (
+        this.username == this.$store.state.user.username &&
+        (this.email = this.$store.state.user.email)
+      ) {
+        return;
+      }
+
+      axios
+        .post(
+          "api-users/update-email-username/",
+          {
+            email: this.email,
+            username: this.username,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.data["success"]) {
+            this.$store.commit("updateOnlyUsernameAndEmail", {
+              email: this.email,
+              username: this.username,
+            });
+          }
+        })
+        .catch((err) => {
+          if (err.response.data["username_error"]) {
+            this.errUsername = err.response.data["username_error"];
+          }
+          if (err.response.data["email_error"]) {
+            this.errEmail = err.response.data["email_error"];
+          }
+        });
+    },
+  },
 };
 </script>
 

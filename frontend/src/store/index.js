@@ -15,6 +15,7 @@ export default new Vuex.Store({
     user: {
       id: null,
       username: null,
+      email: null,
       profileUrl: null,
       acceptAnonymousMessage: null,
       accessToken: null,
@@ -27,6 +28,7 @@ export default new Vuex.Store({
     updateUserCredential(state, credential) {
       state.user.id = credential.user.id;
       state.user.username = credential.user.username;
+      state.user.email = credential.user.email;
       state.user.profileUrl = credential.user.profile_url;
       state.user.acceptAnonymousMessage = credential.user.accept_anonymous_message;
       state.user.accessToken = credential.access_token;
@@ -38,6 +40,11 @@ export default new Vuex.Store({
       state.user.refreshToken = tokenObject.refresh_token;
     },
 
+    updateOnlyUsernameAndEmail(state, data) {
+      state.user.username = data.username;
+      state.user.email = data.email;
+    },
+
     updateOnlyUserProfileUrl(state, newUrl) {
       state.user.profileUrl = newUrl;
     },
@@ -46,6 +53,7 @@ export default new Vuex.Store({
       state.user = {
         id: null,
         username: null,
+        email: null,
         profileUrl: null,
         acceptAnonymousMessage: null,
         accessToken: null,
