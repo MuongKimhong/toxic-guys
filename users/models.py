@@ -13,6 +13,14 @@ def date_format(date):
     return date.strftime("%d/%b/%Y - %I:%M %p")
 
 
+class BlackListAccessToken(models.Model):
+    access_token = models.TextField()
+
+
+class BlackListRefreshToken(models.Model):
+    refresh_token = models.TextField()
+
+
 class User(AbstractUser):
     email = models.CharField(max_length=150, unique=True)
     username = models.CharField(max_length=50, unique=True)

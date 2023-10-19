@@ -14,6 +14,12 @@ def token_verification(request):
     token = str(request.META.get("HTTP_AUTHORIZATION"))[7:]
     decoded = jwt.decode(token, options={"verify_signature": False})
     user = User.objects.get(id=int(decoded.get('user_id')))
+
+    try:
+        bl_token = BlackListAccessToken.objects.get(access_token=token)
+    except BlackListAccessToken.DoesNotExist:
+        bl_token = BlackListAccessToken.objects.create(access_token=token)
+
     return user.id
 
 
@@ -64,6 +70,11 @@ class RenewAccessTokenWithRefreshToken(APIView):
             user = User.objects.get(id=int(decoded.get("user_id")))
         except User.DoesNotExist:
             return Response({"error": True}, status=400)
+        
+        try:
+            bl_token = BlackListRefreshToken.objects.get(refresh_token=refresh_token)
+        except BlackListRefreshToken.DoesNotExist:
+            bl_token = BlackListRefreshToken.objects.create(refresh_token=refresh_token)
         
         return Response(get_token(user), status=200)
 
