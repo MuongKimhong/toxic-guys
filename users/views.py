@@ -14,13 +14,12 @@ def token_verification(request):
     token = str(request.META.get("HTTP_AUTHORIZATION"))[7:]
     decoded = jwt.decode(token, options={"verify_signature": False})
     user = User.objects.get(id=int(decoded.get('user_id')))
-
-    try:
-        bl_token = BlackListAccessToken.objects.get(access_token=token)
-    except BlackListAccessToken.DoesNotExist:
-        bl_token = BlackListAccessToken.objects.create(access_token=token)
-
     return user.id
+
+
+# extract access token from http request
+def extract_token(request):
+    return str(request.META.get("HTTP_AUTHORIZATION"))[7:]
 
 
 def check_password_strong(password):
@@ -57,6 +56,16 @@ via renew_token function
 '''
 def renew_token(request):
     user = User.objects.get(id=token_verification(request))
+
+    token = extract_token(request)
+
+    # blacklist old token
+    try:
+        bl_token = BlackListAccessToken.objects.get(access_token=token)
+        return {"invalid_token": True}
+    except BlackListAccessToken.DoesNotExist:
+        bl_token = BlackListAccessToken.objects.create(access_token=token)
+
     return get_token(user)
     
 
@@ -71,8 +80,10 @@ class RenewAccessTokenWithRefreshToken(APIView):
         except User.DoesNotExist:
             return Response({"error": True}, status=400)
         
+        # blacklist old token
         try:
             bl_token = BlackListRefreshToken.objects.get(refresh_token=refresh_token)
+            return Response({"invalid_token": True}, status=400)
         except BlackListRefreshToken.DoesNotExist:
             bl_token = BlackListRefreshToken.objects.create(refresh_token=refresh_token)
         
