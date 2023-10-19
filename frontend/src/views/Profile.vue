@@ -161,6 +161,7 @@ export default {
               email: this.email,
               username: this.username,
             });
+            this.$updateToken(res.data["new_token"]);
           }
         })
         .catch((err) => {

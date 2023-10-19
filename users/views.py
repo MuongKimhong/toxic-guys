@@ -169,6 +169,10 @@ class UpdateEmailAndUsername(APIView):
         except User.DoesNotExist:
             return Response({"error": True}, status=400)      
 
+        new_token = renew_token(request)
+        if new_token.get("invalid_token"):
+            return Response({"invalid_token": True}, status=400)
+
         if user.email != request.data["email"]:
             if User.objects.filter(email=request.data["email"]).exists():
                 return Response({"email_error": "Email is already taken"}, status=400)
@@ -181,7 +185,7 @@ class UpdateEmailAndUsername(APIView):
         user.username = request.data["username"]
         user.save()
 
-        return Response({"success": True}, status=200)
+        return Response({"success": True, "new_token": new_token}, status=200)
 
 
 class ChangePassword(APIView):

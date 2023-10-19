@@ -30,6 +30,10 @@ Vue.prototype.$authenticateUser = async function (username, password) {
   }
 }
 
+Vue.prototype.$updateToken = function (newToken) {
+  store.commit("updateOnlyUserToken", newToken);
+}
+
 new Vue({
   router,
   store,
