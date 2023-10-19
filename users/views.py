@@ -155,9 +155,13 @@ class ChangeUserProfile(APIView):
         except User.DoesNotExist:
             return Response({"error": True}, status=400)
 
+        new_token = renew_token(request)
+        if new_token.get("invalid_token"):
+            return Response({"invalid_token": True}, status=400)
+
         user.profile = profile
         user.save()  
-        return Response({"profile": user.serialize()['profile']}, status=200)
+        return Response({"profile": user.serialize()['profile_url'], "new_token": new_token}, status=200)
 
 
 class UpdateEmailAndUsername(APIView):

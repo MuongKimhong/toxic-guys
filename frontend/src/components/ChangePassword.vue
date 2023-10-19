@@ -74,6 +74,7 @@ export default {
 
     oldPassword: "",
     newPassword: "",
+    confirmNewPassword: "",
 
     errOldPassword: "",
     errNewPassword: "",
