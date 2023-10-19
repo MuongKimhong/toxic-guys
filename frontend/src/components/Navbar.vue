@@ -48,13 +48,32 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Navbar",
 
   methods: {
     signOut: function () {
-      this.$store.commit("deleteUserCredential");
-      this.$router.push({ name: "SignIn" });
+      axios
+        .post(
+          "api-users/sign-out/",
+          {
+            refresh_token: this.$store.state.user.refreshToken,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          this.$store.commit("deleteUserCredential");
+          if (res.data["success"]) {
+            this.$router.push({ name: "SignIn" });
+          }
+        })
+        .catch(() => {});
     },
   },
 };

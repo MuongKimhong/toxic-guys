@@ -131,6 +131,19 @@ class SignIn(APIView):
         return Response(get_token(user), status=200)
 
 
+class SignOut(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        access_token = extract_token(request)
+        refresh_token = request.data["refresh_token"]
+
+        BlackListAccessToken.objects.get_or_create(access_token=access_token)
+        BlackListRefreshToken.objects.get_or_create(refresh_token=refresh_token)
+
+        return Response({"success": True}, status=200)
+
+
 class ChangeUserProfile(APIView):
     permission_classes = [ IsAuthenticated ]
     parser_classes = [ parsers.MultiPartParser ]
