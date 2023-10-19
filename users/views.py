@@ -9,6 +9,13 @@ import jwt
 from users.models import *
 
 
+'''
+All requests that required authentication
+will perform tokens (access & refresg) change
+via renew_token function
+'''
+
+
 def token_verification(request):
     token = str(request.META.get("HTTP_AUTHORIZATION"))[7:]
     decoded = jwt.decode(token, options={"verify_signature": False})
@@ -31,14 +38,35 @@ def check_password_strong(password):
     return False if ((length_check is False) or (uppercase_check is False)) else True
 
 
-def get_token(user, request):
+def get_token(user):
     refresh_token = RefreshToken.for_user(user) 
     access_token  = refresh_token.access_token
-    return {
+
+    data = {
         'user': user.serialize(),
         'refresh_token': str(refresh_token),
         'access_token' : str(access_token)
     }
+    return data
+
+
+def renew_token(request):
+    user = User.objects.get(id=token_verification(request))
+    return get_token(user)
+    
+
+class RenewAccessTokenWithRefreshToken(APIView):
+    permission_classes = [ AllowAny ]
+
+    def post(self, request):
+        refresh_token = request.data["refresh_token"]
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        try:
+            user = User.objects.get(id=int(decoded.get("user_id")))
+        except User.DoesNotExist:
+            return Response({"error": True}, status=400)
+        
+        return Response(get_token(user), status=200)
 
 
 class SignUp(APIView):
@@ -79,7 +107,7 @@ class SignIn(APIView):
         if check_password(request.data["password"], user.password) is False:
             return Response({"error": True}, status=400)
 
-        return Response(get_token(user, request), status=200)
+        return Response(get_token(user), status=200)
 
 
 class ChangeUserProfile(APIView):
