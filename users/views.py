@@ -203,6 +203,10 @@ class ChangePassword(APIView):
         if check_password_strong(request.data["new_password"]) is False:
             return Response({"weak_password": "Password must contains 8 char and 1 uppercase"}, status=400)
 
+        new_token = renew_token(request)
+        if new_token.get("invalid_token"):
+            return Response({"invalid_token": True}, status=400)
+
         user.password = make_password(request.data["new_password"])
         user.save()
-        return Response({"success": True}, status=200)
+        return Response({"success": True, "new_token": new_token}, status=200)
