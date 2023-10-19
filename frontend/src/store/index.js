@@ -17,7 +17,8 @@ export default new Vuex.Store({
       username: null,
       profileUrl: null,
       acceptAnonymousMessage: null,
-      accessToken: null
+      accessToken: null,
+      refreshToken: null
     }
   },
   getters: {
@@ -29,6 +30,7 @@ export default new Vuex.Store({
       state.user.profileUrl = credential.user.profile_url;
       state.user.acceptAnonymousMessage = credential.user.accept_anonymous_message;
       state.user.accessToken = credential.access_token;
+      state.user.refreshToken = credential.refresh_token;
     },
 
     updateOnlyUserProfileUrl(state, newUrl) {
@@ -41,7 +43,8 @@ export default new Vuex.Store({
         username: null,
         profileUrl: null,
         acceptAnonymousMessage: null,
-        accessToken: null
+        accessToken: null,
+        refreshToken: null
       }
     }
   },
