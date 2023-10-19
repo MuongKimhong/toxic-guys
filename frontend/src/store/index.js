@@ -33,6 +33,11 @@ export default new Vuex.Store({
       state.user.refreshToken = credential.refresh_token;
     },
 
+    updateOnlyUserToken(state, tokenObject) {
+      state.user.accessToken = tokenObject.access_token;
+      state.user.refreshToken = tokenObject.refresh_token;
+    },
+
     updateOnlyUserProfileUrl(state, newUrl) {
       state.user.profileUrl = newUrl;
     },
