@@ -3,16 +3,7 @@
     <v-row align="center" justify-content="center">
       <v-col cols="8" class="ml-auto mr-auto">
         <div class="text-center">
-          <v-avatar size="160" color="white" class="ml-auto mr-auto"></v-avatar>
-          <div class="mt-5">
-            <v-btn
-              class="text-capitalize white--text"
-              style="background-color: rgb(95, 95, 95)"
-              small
-            >
-              Change profile
-            </v-btn>
-          </div>
+          <ChangeProfile />
 
           <hr class="hr-element" />
 
@@ -34,6 +25,7 @@
 <script>
 import UpdateUsernameEmail from "../components/UpdateUsernameEmail.vue";
 import ChangePassword from "../components/ChangePassword.vue";
+import ChangeProfile from "../components/ChangeProfile.vue";
 
 export default {
   name: "Profile",
@@ -41,6 +33,7 @@ export default {
   components: {
     UpdateUsernameEmail,
     ChangePassword,
+    ChangeProfile,
   },
 
   data: () => ({
