@@ -9,12 +9,6 @@ import jwt
 from users.models import *
 
 
-'''
-All requests that required authentication
-will perform tokens (access & refresg) change
-via renew_token function
-'''
-
 
 def token_verification(request):
     token = str(request.META.get("HTTP_AUTHORIZATION"))[7:]
@@ -50,6 +44,11 @@ def get_token(user):
     return data
 
 
+'''
+All requests that required authentication
+will perform tokens (access & refresg) change
+via renew_token function
+'''
 def renew_token(request):
     user = User.objects.get(id=token_verification(request))
     return get_token(user)
