@@ -3,7 +3,9 @@ from users.models import *
 
 
 def create_dummy_users():
-    for i in range(300):
+    users_to_create = 3000
+
+    for i in range(users_to_create):
         print(f"Creating dummy user {i}")
 
         dummy_user = User.objects.create(
@@ -12,5 +14,5 @@ def create_dummy_users():
             password=make_password("Testing123")
         )
     
-    print("Finished created 300 dummy users")
+    print(f"Finished created {users_to_create} dummy users")
     

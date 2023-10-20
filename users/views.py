@@ -2,13 +2,17 @@ from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
+from django.core.paginator import Paginator
 from rest_framework.views import APIView
+from django.core.cache import cache
 from rest_framework import parsers
 import random
 import jwt
 
 from users.models import *
 
+
+TWENTY_MINUTES_IN_SECONDS = 20 * 60
 
 
 def token_verification(request):
@@ -220,9 +224,23 @@ class ChangePassword(APIView):
 class GetRandomUsers(APIView):
     permission_classes = [ IsAuthenticated ]
 
-    def get(self, request):
-        users = User.objects.exclude(id=token_verification(request))
-        users = [user.serialize() for user in users]
-        users = random.sample(users, len(users))
+    def get(self, request): 
+        page = request.query_params.get("page")
 
-        return Response({"random_users": users}, status=200)
+        if cache.get("random_users") is None:
+            users = User.objects.all()
+            random_users = random.sample(list(users), users.count())
+            cache.set("random_users", random_users, TWENTY_MINUTES_IN_SECONDS)
+        else:
+            random_users = cache.get("random_users")
+
+        paginator = Paginator(random_users, per_page=10)
+        random_users = paginator.get_page(page)
+        random_users = [user.serialize() for user in random_users]
+
+        responses = {
+            "random_users": random_users,
+            "total_pages": paginator.num_pages
+        }
+
+        return Response(responses, status=200)
