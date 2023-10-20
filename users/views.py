@@ -244,3 +244,16 @@ class GetRandomUsers(APIView):
         }
 
         return Response(responses, status=200)
+
+
+class SendUserConnection(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def get(self, request):
+        # user to be connected with
+        try:
+            user_to_be_connected = User.objects.get(id=request.data["user_to_be_connected_id"])
+        except User.DoesNotExist:
+            return Response({"user_not_found": True}, status=400)
+
+        user_connections = UserConnection.objects.filter(user__id=token_verification(request))
