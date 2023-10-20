@@ -3,8 +3,11 @@
     <v-row align="center" justify-content="center">
       <v-col cols="12" class="mr-auto ml-auto">
         <div class="text-right">
-          <v-btn small class="green text-capitalize white--text">
+          <v-btn small class="mr-4 green text-capitalize white--text">
             New group
+          </v-btn>
+          <v-btn small class="green text-capitalize white--text">
+            New connection
           </v-btn>
         </div>
         <div class="mt-5">
