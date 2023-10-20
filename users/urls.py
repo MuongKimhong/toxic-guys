@@ -8,4 +8,6 @@ urlpatterns = [
     path("change-password/", ChangePassword.as_view()),
     path("change-profile/", ChangeUserProfile.as_view()),
     path("update-email-username/", UpdateEmailAndUsername.as_view()),
+
+    path("get-random-users/", GetRandomUsers.as_view()),
 ]

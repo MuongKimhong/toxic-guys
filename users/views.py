@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import parsers
+import random
 import jwt
 
 from users.models import *
@@ -214,3 +215,14 @@ class ChangePassword(APIView):
         user.password = make_password(request.data["new_password"])
         user.save()
         return Response({"success": True, "new_token": new_token}, status=200)
+
+
+class GetRandomUsers(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def get(self, request):
+        users = User.objects.exclude(id=token_verification(request))
+        users = [user.serialize() for user in users]
+        users = random.sample(users, len(users))
+
+        return Response({"random_users": users}, status=200)
