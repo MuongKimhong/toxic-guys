@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
     'users',
     'groups',
+    'notifications',
     
     'rest_framework_simplejwt',
     'rest_framework',

@@ -5,6 +5,7 @@ from django.conf import settings
 urlpatterns = [
     path("api-users/", include("users.urls")),
     path("api-groups/", include("groups.urls")),
+    path("api-notifications/", include("notifications.urls")),
 ]
 
 if settings.DEBUG is True:
