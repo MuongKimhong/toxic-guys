@@ -45,6 +45,8 @@ class User(AbstractUser):
 class UserConnection(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     connection = models.ForeignKey(User, related_name="friend", on_delete=models.CASCADE) # friend
+    is_accepted = models.BooleanField(default=False) # accepted by connection
+    is_rejected = models.BooleanField(default=False) # rejected by connection
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -54,6 +56,8 @@ class UserConnection(models.Model):
         return {
             "user": self.user.serialize(),
             "connection": self.connection.serialize(),
+            "is_accepted": self.is_accepted,
+            "is_rejected": self.is_rejected,
             "created_date": date_format(self.created_date)
         }
 

@@ -16,6 +16,6 @@ class Notification(models.Model):
             "sender": self.sender.serialize(),
             "receiver": self.receiver.serialize(),
             "type": self._type,
-            "text": self.text
+            "text": self.text,
             "created_date": date_format(self.created_date)
         }
