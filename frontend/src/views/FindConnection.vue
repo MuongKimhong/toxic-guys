@@ -43,7 +43,7 @@
 
         <div class="text-right mt-5">
           <v-btn
-            v-if="currentPage > 1 && currentPage < totalPages"
+            v-if="currentPage > 1 && currentPage <= totalPages"
             x-small
             class="text-capitalize mr-1"
             @click="previousPageButtonOnClick()"
