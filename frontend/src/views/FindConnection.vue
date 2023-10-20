@@ -20,8 +20,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in desserts" :key="item.name">
-                <td>{{ item.name }}</td>
+              <tr v-for="user in users" :key="user.id">
+                <td>{{ item.username }}</td>
                 <td class="text-right">
                   <v-btn small class="dark-grey white--text text-capitalize"
                     >Connect</v-btn
@@ -47,52 +47,7 @@ export default {
   },
 
   data: () => ({
-    desserts: [
-      {
-        name: "Frozen Yogurt",
-        calories: 159,
-      },
-      {
-        name: "Ice cream sandwich",
-        calories: 237,
-      },
-      {
-        name: "Eclair",
-        calories: 262,
-      },
-      {
-        name: "Cupcake",
-        calories: 305,
-      },
-      {
-        name: "Gingerbread",
-        calories: 356,
-      },
-      {
-        name: "Jelly bean",
-        calories: 375,
-      },
-      {
-        name: "Lollipop",
-        calories: 392,
-      },
-      {
-        name: "Honeycomb",
-        calories: 408,
-      },
-      {
-        name: "Donut",
-        calories: 452,
-      },
-      {
-        name: "KitKat",
-        calories: 518,
-      },
-      {
-        name: "KitKat",
-        calories: 518,
-      },
-    ],
+    users: [],
   }),
 
   methods: {},
