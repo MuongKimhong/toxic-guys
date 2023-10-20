@@ -3,7 +3,7 @@
     <!-- not signed in -->
     <div v-if="$store.state.user.accessToken == null">
       <div class="mt-10">
-        <SearchUser />
+        <SearchUser :showText="true" />
 
         <hr class="hr-element" />
 

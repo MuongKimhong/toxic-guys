@@ -2,7 +2,7 @@
   <v-container fill-height>
     <v-row align="center" justify-content="center">
       <v-col cols="12" class="mr-auto ml-auto">
-        <div class="text-right">
+        <div class="text-right mt-2">
           <v-btn small class="mr-4 green text-capitalize white--text">
             New group
           </v-btn>

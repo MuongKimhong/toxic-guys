@@ -13,7 +13,7 @@
           v-model="searchText"
         ></v-text-field>
 
-        <div class="text-center">
+        <div v-if="showText === true" class="text-center">
           <small class="text-center">
             Did you know that here you can chat with other people anonymously if
             they are opened to anonymous conversation?
@@ -31,5 +31,7 @@ export default {
   data: () => ({
     searchText: "",
   }),
+
+  props: ["showText"],
 };
 </script>
