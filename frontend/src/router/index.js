@@ -8,6 +8,7 @@ import SignUp from "../views/SignUp.vue";
 import Home from '../views/Home.vue';
 import Profile from "../views/Profile.vue";
 import Messages from "../views/Messages.vue";
+import FindConnection from "../views/FindConnection.vue";
 
 Vue.use(VueRouter)
 
@@ -30,6 +31,15 @@ const routes = [
     path: "/profile",
     name: "Profile",
     component: Profile,
+    beforeEnter: (to, from, next) => {
+      if (store.state.user.accessToken == null) next({ name: 'SignIn' });
+      else next();
+    },
+  },
+  {
+    path: "/find-connection",
+    name: "FindConnection",
+    component: FindConnection,
     beforeEnter: (to, from, next) => {
       if (store.state.user.accessToken == null) next({ name: 'SignIn' });
       else next();

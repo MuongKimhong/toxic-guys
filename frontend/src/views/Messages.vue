@@ -6,7 +6,11 @@
           <v-btn small class="mr-4 green text-capitalize white--text">
             New group
           </v-btn>
-          <v-btn small class="green text-capitalize white--text">
+          <v-btn
+            small
+            class="green text-capitalize white--text"
+            @click="$router.push({ name: 'FindConnection' })"
+          >
             New connection
           </v-btn>
         </div>
