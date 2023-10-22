@@ -303,8 +303,20 @@ class GetAllConnectionRequests(APIView):
 class AcceptOrRejectConnectionRequest(APIView):
     permission_classes = [ IsAuthenticated ]
 
+    # resposne to connection request
+    def check_response_status(user_connection, request):
+        if request.data["response"] == "accept":
+            user_connection.is_accepted = True
+            user_connection.save()
+            return Response({"accepted": True}, status=200)
+        elif request.data["response"] == "reject":
+            user_connection.delete()
+            return Response({"rejected": True}, status=200)
+        else:
+            return Response({"error": True}, status=400)
+
     def post(self, request):
-        if request.data.get("request_sender_id") is None:
+        if (request.data.get("request_sender_id") is None) or (request.data.get("response") is None):
             return Response({"incorrect_param": True}, status=400)
 
         try:
@@ -314,8 +326,7 @@ class AcceptOrRejectConnectionRequest(APIView):
             )
         except UserConnection.DoesNotExist:
             return Response(("request_not_found": True), status=400)
-        
-        user_connection.is_accepted = request.data.get("accept")
-        user_connection.is_rejected = request.data.get("reject")
-        user_connection.save()
-        return Response({"success": True}, status=200)
+
+        # resposne to connection request
+        if request.data.get("response") is not None:
+            return self.check_response_status(user_connection, request)
