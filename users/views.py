@@ -287,3 +287,35 @@ class SendUserConnectionRequest(APIView):
             user_id=token_verification(request), connection=user_to_be_connected
         )
         return Response({"request_sent": True}, status=200)
+
+
+class GetAllConnectionRequests(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def get(self, request):
+        user_connections = UserConnection.objects.filter(
+            connection__id=token_verification(request), is_accepted=False, is_rejected=False
+        )
+        user_connections = [user_connection.serialize() for user_connection in user_connections.order_by("-id")]
+        return Response({"connection_requests": user_connections}, status=200)
+
+
+class AcceptOrRejectConnectionRequest(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        if request.data.get("request_sender_id") is None:
+            return Response({"incorrect_param": True}, status=400)
+
+        try:
+            user_connection = UserConnection.objects.get(
+                user__id=request.data["request_sender_id"],
+                connection__id=token_verification(request)
+            )
+        except UserConnection.DoesNotExist:
+            return Response(("request_not_found": True), status=400)
+        
+        user_connection.is_accepted = request.data.get("accept")
+        user_connection.is_rejected = request.data.get("reject")
+        user_connection.save()
+        return Response({"success": True}, status=200)
