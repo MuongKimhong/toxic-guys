@@ -12,4 +12,5 @@ urlpatterns = [
     path("get-random-users/", GetRandomUsers.as_view()),
     path("search-users/", SearchUser.as_view()),
     path("search-users-accept-anonymous-message/", SearchUserAcceptAnonymousMessage.as_view()),
+    path("send-user-connection-request/", SendUserConnectionRequest.as_view())
 ]

@@ -273,7 +273,7 @@ class SearchUserAcceptAnonymousMessage(SearchUser):
     accept_anonymous_message = True
 
 
-class SendUserConnection(APIView):
+class SendUserConnectionRequest(APIView):
     permission_classes = [ IsAuthenticated ]
 
     def get(self, request):
@@ -283,4 +283,7 @@ class SendUserConnection(APIView):
         except User.DoesNotExist:
             return Response({"user_not_found": True}, status=400)
 
-        user_connections = UserConnection.objects.filter(user__id=token_verification(request))
+        user_connection = UserConnection.objects.get_or_create(
+            user_id=token_verification(request), connection=user_to_be_connected
+        )
+        return Response({"request_sent": True}, status=200)
