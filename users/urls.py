@@ -10,4 +10,5 @@ urlpatterns = [
     path("update-email-username/", UpdateEmailAndUsername.as_view()),
 
     path("get-random-users/", GetRandomUsers.as_view()),
+    path("search-users/", SearchUser.as_view()),
 ]

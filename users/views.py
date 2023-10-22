@@ -246,6 +246,24 @@ class GetRandomUsers(APIView):
         return Response(responses, status=200)
 
 
+class SearchUser(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def get(self, request):
+        search_text = request.query_params.get("search_text")
+        paginator_page = request.query_params.get("page")
+
+        if search_text is None:
+            return Response({"results": []}, status=200)
+        
+        users = User.objects.filter(username__icontains=search_text)
+        paginator = Paginator(list(users), per_page=10)
+        results = paginator.get_page(paginator_page)
+        results = [user.serialize() for user in results]
+
+        return Response({"results": results, "total_pages": paginator.num_pages}, status=200)
+
+
 class SendUserConnection(APIView):
     permission_classes = [ IsAuthenticated ]
 
