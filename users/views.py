@@ -327,6 +327,4 @@ class AcceptOrRejectConnectionRequest(APIView):
         except UserConnection.DoesNotExist:
             return Response(("request_not_found": True), status=400)
 
-        # resposne to connection request
-        if request.data.get("response") is not None:
-            return self.check_response_status(user_connection, request)
+        return self.check_response_status(user_connection, request)
