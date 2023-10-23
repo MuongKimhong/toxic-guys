@@ -38,7 +38,7 @@ export default {
   methods: {
     typingEvent: function () {
       this.$emit("userTyping", this.searchText);
-    }
-  }
+    },
+  },
 };
 </script>

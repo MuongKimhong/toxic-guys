@@ -5,6 +5,7 @@
       <div class="mt-10">
         <SearchUser
           :showText="true"
+          :users="users"
           @userTyping="searchUsersAcceptAnonymousMessage"
         />
 
@@ -55,6 +56,7 @@
 </template>
 
 <script>
+// import axios from "axios";
 import SearchUser from "../components/SearchUser.vue";
 import GroupCard from "../components/GroupCard.vue";
 
@@ -66,10 +68,30 @@ export default {
     GroupCard,
   },
 
+  data: () => ({
+    users: [],
+  }),
+
   methods: {
     searchUsersAcceptAnonymousMessage: function (searchText) {
       if (searchText.trim() != "") {
         console.log(searchText);
+        // axios
+        //   .get("api-users/search-users-accept-anonymous-message/", {
+        //     params: {
+        //       search_text: this.searchText,
+        //       page: 1,
+        //     },
+        //     headers: {
+        //       Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+        //     },
+        //   })
+        //   .then((res) => {
+        //     if (res.data["results"]) {
+        //       this.users = res.data["results"];
+        //       // this.totalPages = res.data["total_pages"];
+        //     }
+        //   });
       }
     },
   },
