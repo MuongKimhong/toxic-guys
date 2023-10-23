@@ -3,7 +3,7 @@
     <!-- not signed in -->
     <div v-if="$store.state.user.accessToken == null">
       <div class="mt-10">
-        <SearchUser :showText="true" />
+        <SearchUser :showText="true" :searchForUsersAcceptAnonymousMessage="true"/>
 
         <hr class="hr-element" />
 

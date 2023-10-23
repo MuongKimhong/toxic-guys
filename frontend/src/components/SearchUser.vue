@@ -32,6 +32,12 @@ export default {
     searchText: "",
   }),
 
-  props: ["showText"],
+  props: ["showText", "searchForUsersAcceptAnonymousMessage"],
+
+  methods: {
+    searchUser: function () {},
+
+    searchUserAcceptAnonymousMessage: function () {}
+  }
 };
 </script>

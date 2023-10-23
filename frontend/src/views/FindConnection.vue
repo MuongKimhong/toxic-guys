@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <SearchUser />
+    <SearchUser :searchForUsersAcceptAnonymousMessage="false"/>
 
     <div class="mt-5">
       <v-card
