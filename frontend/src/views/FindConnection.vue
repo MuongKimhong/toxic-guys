@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <SearchUser @userTyping="searchUsers"/>
+    <SearchUser @userTyping="typingSearchHandling" />
 
     <div class="mt-5">
       <v-card
@@ -77,8 +77,10 @@ export default {
 
   data: () => ({
     users: [],
+
     currentPage: 1,
     totalPages: 0,
+    searchText: "",
   }),
 
   created() {
@@ -106,30 +108,46 @@ export default {
 
     nextPageButtonOnClick: function () {
       this.currentPage = this.currentPage + 1;
-      this.getRandomUsers();
+
+      if (this.searchText.trim() === "") this.getRandomUsers();
+      else this.searchUsers();
     },
 
     previousPageButtonOnClick: function () {
       this.currentPage = this.currentPage - 1;
-      this.getRandomUsers();
+
+      if (this.searchText.trim() === "") this.getRandomUsers();
+      else this.searchUsers();
     },
 
-    searchUsers: function (searchText) {
-      if (searchText.trim() != "") {
-        axios.get("api-users/search-users-accept-anonymous-message/", {
-          params: {
-            search_text: searchText,
-            page: 1
-          },
-          headers: {
-            Authorization: `Bearer ${this.$store.state.user.accessToken}`
-          }
-        })
-        .then((res) => {
-          console.log(res.data)
-        })
+    typingSearchHandling: function (searchText) {
+      this.searchText = searchText;
+      this.currentPage = 1;
+      this.searchUsers();
+    },
+
+    searchUsers: function () {
+      if (this.searchText.trim() != "") {
+        axios
+          .get("api-users/search-users/", {
+            params: {
+              search_text: this.searchText,
+              page: this.currentPage,
+            },
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          })
+          .then((res) => {
+            if (res.data["results"]) {
+              this.users = res.data["results"];
+              this.totalPages = res.data["total_pages"];
+            }
+          });
+      } else {
+        this.getRandomUsers();
       }
-    }
+    },
   },
 };
 </script>

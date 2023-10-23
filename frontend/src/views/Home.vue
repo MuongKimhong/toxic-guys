@@ -3,7 +3,10 @@
     <!-- not signed in -->
     <div v-if="$store.state.user.accessToken == null">
       <div class="mt-10">
-        <SearchUser :showText="true" @userTyping="searchUsersAcceptAnonymousMessage"/>
+        <SearchUser
+          :showText="true"
+          @userTyping="searchUsersAcceptAnonymousMessage"
+        />
 
         <hr class="hr-element" />
 
@@ -65,8 +68,11 @@ export default {
 
   methods: {
     searchUsersAcceptAnonymousMessage: function (searchText) {
-    }
-  }
+      if (searchText.trim() != "") {
+        console.log(searchText);
+      }
+    },
+  },
 };
 </script>
 

@@ -259,9 +259,10 @@ class SearchUser(APIView):
 
         if self.accept_anonymous_message is True: 
             users = User.objects.filter(username__icontains=search_text, accept_anonymous_message=True)
+            users = users.exclude(id=token_verification(request))
         else:
-            users = User.objects.filter(username__icontains=search_text)
-
+            users = User.objects.filter(username__icontains=search_text).exclude(id=token_verification(request))
+        
         paginator = Paginator(list(users), per_page=10)
         results = paginator.get_page(paginator_page)
         results = [user.serialize() for user in results]
@@ -325,6 +326,6 @@ class AcceptOrRejectConnectionRequest(APIView):
                 connection__id=token_verification(request)
             )
         except UserConnection.DoesNotExist:
-            return Response(("request_not_found": True), status=400)
+            return Response({"request_not_found": True}, status=400)
 
         return self.check_response_status(user_connection, request)
