@@ -3,7 +3,7 @@
     <!-- not signed in -->
     <div v-if="$store.state.user.accessToken == null">
       <div class="mt-10">
-        <SearchUser :showText="true" :searchForUsersAcceptAnonymousMessage="true"/>
+        <SearchUser :showText="true" @userTyping="searchUsersAcceptAnonymousMessage"/>
 
         <hr class="hr-element" />
 
@@ -62,6 +62,10 @@ export default {
     SearchUser,
     GroupCard,
   },
+
+  methods: {
+    searchUsersAcceptAnonymousMessage: function (searchText) {}
+  }
 };
 </script>
 

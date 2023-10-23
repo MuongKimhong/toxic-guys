@@ -11,6 +11,7 @@
           outlined
           append-icon="mdi-account-search"
           v-model="searchText"
+          @keyup="typingEvent()"
         ></v-text-field>
 
         <div v-if="showText === true" class="text-center">
@@ -32,12 +33,12 @@ export default {
     searchText: "",
   }),
 
-  props: ["showText", "searchForUsersAcceptAnonymousMessage"],
+  props: ["showText"],
 
   methods: {
-    searchUser: function () {},
-
-    searchUserAcceptAnonymousMessage: function () {}
+    typingEvent: function () {
+      this.$emit("userTyping", this.searchText);
+    }
   }
 };
 </script>

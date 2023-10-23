@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <SearchUser :searchForUsersAcceptAnonymousMessage="false"/>
+    <SearchUser @userTyping="searchUsers"/>
 
     <div class="mt-5">
       <v-card
@@ -113,6 +113,8 @@ export default {
       this.currentPage = this.currentPage - 1;
       this.getRandomUsers();
     },
+
+    searchUsers: function (searchText) {}
   },
 };
 </script>
