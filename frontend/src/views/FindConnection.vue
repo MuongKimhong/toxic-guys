@@ -114,7 +114,22 @@ export default {
       this.getRandomUsers();
     },
 
-    searchUsers: function (searchText) {}
+    searchUsers: function (searchText) {
+      if (searchText.trim() != "") {
+        axios.get("api-users/search-users-accept-anonymous-message/", {
+          params: {
+            search_text: searchText,
+            page: 1
+          },
+          headers: {
+            Authorization: `Bearer ${this.$store.state.user.accessToken}`
+          }
+        })
+        .then((res) => {
+          console.log(res.data)
+        })
+      }
+    }
   },
 };
 </script>

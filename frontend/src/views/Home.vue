@@ -64,7 +64,8 @@ export default {
   },
 
   methods: {
-    searchUsersAcceptAnonymousMessage: function (searchText) {}
+    searchUsersAcceptAnonymousMessage: function (searchText) {
+    }
   }
 };
 </script>
