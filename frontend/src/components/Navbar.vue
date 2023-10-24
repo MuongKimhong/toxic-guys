@@ -27,6 +27,10 @@
           <i class="fas fa-question white--text"></i>
         </v-btn>
         <v-btn text @click="$router.push({ name: 'Profile' })">
+          <span class="text-capitalize mr-1 white--text">Notifications</span>
+          <i class="fas fa-bell white--text"></i>
+        </v-btn>
+        <v-btn text @click="$router.push({ name: 'Profile' })">
           <span class="text-capitalize mr-1 white--text">Profile</span>
           <i class="fas fa-user-circle white--text"></i>
         </v-btn>

@@ -75,6 +75,14 @@ export default {
     errorMessage: "",
   }),
 
+  created() {
+    document.addEventListener("keyup", (event) => {
+      if (event.key === "Enter") {
+        this.signIn();
+      }
+    });
+  },
+
   methods: {
     signIn: async function () {
       this.errorMessage = "";
