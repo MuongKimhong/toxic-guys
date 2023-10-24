@@ -173,7 +173,6 @@ export default {
           .then((res) => {
             if (res.data["results"]) {
               this.users = res.data["results"];
-              console.log(res.data);
               this.totalPages = res.data["total_pages"];
             }
           });
@@ -182,6 +181,7 @@ export default {
         this.menuWidth = null;
         this.menuPositionX = null;
         this.menuPositionY = null;
+        this.totalPages = 0;
       }
     },
   },

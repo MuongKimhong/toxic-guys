@@ -248,7 +248,6 @@ class GetRandomUsers(APIView):
 
 class SearchUser(APIView):
     permission_classes = [ IsAuthenticated ]
-    accept_anonymous_message = False
 
     def get(self, request):
         search_text = request.query_params.get("search_text")
@@ -257,12 +256,7 @@ class SearchUser(APIView):
         if search_text is None:
             return Response({"results": []}, status=200)
 
-        if self.accept_anonymous_message is True: 
-            print('hello')
-            users = User.objects.filter(username__icontains=search_text, accept_anonymous_message=True)
-        else:
-            users = User.objects.filter(username__icontains=search_text).exclude(id=token_verification(request))
-        
+        users = User.objects.filter(username__icontains=search_text).exclude(id=token_verification(request)) 
         paginator = Paginator(list(users), per_page=10)
         results = paginator.get_page(paginator_page)
         results = [user.serialize() for user in results]
@@ -270,9 +264,25 @@ class SearchUser(APIView):
         return Response({"results": results, "total_pages": paginator.num_pages}, status=200)
 
 
-class SearchUserAcceptAnonymousMessage(SearchUser):
+class SearchUserAcceptAnonymousMessage(APIView):
     permission_classes = [ AllowAny ]
-    accept_anonymous_message = True
+
+    def get(self, request):
+        search_text = request.query_params.get("search_text")
+
+        if search_text is None:
+            return Response({"results": []}, status=200)
+
+        users = User.objects.filter(username__icontains=search_text, accept_anonymous_message=True)
+        users = random.sample(list(users), users.count())
+
+        # select only 10 users if query has more than 20 users
+        if len(users) >= 20:
+            users = users[:10]
+        
+        results = [user.serialize() for user in users]
+
+        return Response({"results": results}, status=200)
 
 
 class SendUserConnectionRequest(APIView):
