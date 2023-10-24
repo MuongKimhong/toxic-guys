@@ -229,7 +229,16 @@ class GetRandomUsers(APIView):
 
         if cache.get("random_users") is None:
             users = User.objects.all().exclude(id=token_verification(request))
-            random_users = random.sample(list(users), users.count())
+            not_connected_users = []
+
+            # we want to get only users that are not connected yet
+            for user in users:
+                try:
+                    user_connection = UserConnection.objects.get(id=token_verification(request), connection__id=user.id)
+                except UserConnection.DoesNotExist:
+                    not_connected_users.append(user) 
+
+            random_users = random.sample(not_connected_users, len(not_connected_users))
             cache.set("random_users", random_users, TWENTY_MINUTES_IN_SECONDS)
         else:
             random_users = cache.get("random_users")
