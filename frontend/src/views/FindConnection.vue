@@ -20,7 +20,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="user in users" :key="user.id">
+              <tr v-for="(user, index) in users" :key="user.id">
                 <td v-if="user.id != $store.state.user.id">
                   <v-avatar size="28" color="white">
                     <v-img
@@ -32,8 +32,20 @@
                   <span class="ml-2">{{ user.username }}</span>
                 </td>
                 <td class="text-right">
-                  <v-btn small class="dark-grey white--text text-capitalize">
+                  <v-btn
+                    v-if="user.request_pending == false"
+                    small
+                    class="dark-grey white--text text-capitalize"
+                    @click="sendConnectionRequest(user.id, index)"
+                  >
                     Connect
+                  </v-btn>
+                  <v-btn
+                    v-if="user.request_pending == true"
+                    small
+                    class="dark-grey white--text text-capitalize"
+                  >
+                    Request sent
                   </v-btn>
                 </td>
               </tr>
@@ -147,6 +159,26 @@ export default {
       } else {
         this.getRandomUsers();
       }
+    },
+
+    sendConnectionRequest: function (userId, index) {
+      axios
+        .post(
+          "api-users/send-user-connection-request/",
+          {
+            user_to_be_connected_id: userId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.data["request_sent"]) {
+            this.users[index]["request_pending"] = true;
+          }
+        });
     },
   },
 };

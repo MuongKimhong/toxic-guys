@@ -233,10 +233,18 @@ class GetRandomUsers(APIView):
 
             # we want to get only users that are not connected yet
             for user in users:
+                user_serialize = user.serialize()
                 try:
-                    user_connection = UserConnection.objects.get(id=token_verification(request), connection__id=user.id)
+                    user_connection = UserConnection.objects.get(
+                        id=token_verification(request), 
+                        connection__id=user.id,
+                        is_accepted=False
+                    )
+                    user_serialize["request_pending"] = True
                 except UserConnection.DoesNotExist:
-                    not_connected_users.append(user) 
+                    user_serialize["request_pending"] = False
+                
+                not_connected_users.append(user_serialize)
 
             random_users = random.sample(not_connected_users, len(not_connected_users))
             cache.set("random_users", random_users, TWENTY_MINUTES_IN_SECONDS)
@@ -245,13 +253,7 @@ class GetRandomUsers(APIView):
 
         paginator = Paginator(random_users, per_page=10)
         random_users = paginator.get_page(page)
-        random_users = [user.serialize() for user in random_users]
-
-        responses = {
-            "random_users": random_users,
-            "total_pages": paginator.num_pages
-        }
-
+        responses = {"random_users": random_users.object_list, "total_pages": paginator.num_pages}
         return Response(responses, status=200)
 
 
@@ -268,9 +270,24 @@ class SearchUser(APIView):
         users = User.objects.filter(username__icontains=search_text).exclude(id=token_verification(request)) 
         paginator = Paginator(list(users), per_page=10)
         results = paginator.get_page(paginator_page)
-        results = [user.serialize() for user in results]
 
-        return Response({"results": results, "total_pages": paginator.num_pages}, status=200)
+        not_connected_users = []
+
+        # we want to get only users that are not connected yet
+        for user in results:
+            user_serialize = user.serialize()
+            try:
+                user_connection = UserConnection.objects.get(
+                    user__id=token_verification(request),
+                    connection__id=user.id,
+                    is_accepted=False
+                )
+                user_serialize["request_pending"] = True
+            except UserConnection.DoesNotExist:
+                user_serialize["request_pending"] = False 
+
+            not_connected_users.append(user_serialize)
+        return Response({"results": not_connected_users, "total_pages": paginator.num_pages}, status=200)
 
 
 # search when user typing

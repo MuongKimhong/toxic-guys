@@ -13,13 +13,6 @@
           v-model="searchText"
           @keyup="typingEvent()"
         ></v-text-field>
-
-        <div v-if="showText === true" class="text-center">
-          <small class="text-center">
-            Did you know that here you can chat with other people anonymously if
-            they are opened to anonymous conversation?
-          </small>
-        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -32,8 +25,6 @@ export default {
   data: () => ({
     searchText: "",
   }),
-
-  props: ["showText"],
 
   methods: {
     typingEvent: function () {
