@@ -258,8 +258,8 @@ class SearchUser(APIView):
             return Response({"results": []}, status=200)
 
         if self.accept_anonymous_message is True: 
+            print('hello')
             users = User.objects.filter(username__icontains=search_text, accept_anonymous_message=True)
-            users = users.exclude(id=token_verification(request))
         else:
             users = User.objects.filter(username__icontains=search_text).exclude(id=token_verification(request))
         
@@ -271,6 +271,7 @@ class SearchUser(APIView):
 
 
 class SearchUserAcceptAnonymousMessage(SearchUser):
+    permission_classes = [ AllowAny ]
     accept_anonymous_message = True
 
 
