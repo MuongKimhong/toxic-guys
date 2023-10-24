@@ -1,7 +1,7 @@
 from notifications.models import Notification
 
 
-def send_notification_request(sender, receiver, text, _type=None):
+def send_notification(sender, receiver, text, _type=None):
 
     notification = Notification.objects.get_or_create(
         sender = sender,

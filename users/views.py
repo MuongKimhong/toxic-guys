@@ -11,7 +11,7 @@ import jwt
 
 from users.models import *
 from notifications.models import *
-from notifications.views import send_notification_request
+from notifications.views import send_notification
 
 
 TWENTY_MINUTES_IN_SECONDS = 20 * 60
@@ -342,7 +342,7 @@ class SendUserConnectionRequest(APIView):
         user_connection = UserConnection.objects.get_or_create(
             user_id=token_verification(request), connection=user_to_be_connected
         )
-        send_notification_request(
+        send_notification(
             sender=user, 
             receiver=user_to_be_connected, 
             text=f"{user.username} wants to connect with you"
