@@ -264,8 +264,10 @@ class SearchUser(APIView):
         return Response({"results": results, "total_pages": paginator.num_pages}, status=200)
 
 
+# search when user typing
 class SearchUserAcceptAnonymousMessageOnTyping(APIView):
     permission_classes = [ AllowAny ]
+    on_typing = True
 
     def get(self, request):
         search_text = request.query_params.get("search_text")
@@ -274,15 +276,27 @@ class SearchUserAcceptAnonymousMessageOnTyping(APIView):
             return Response({"results": []}, status=200)
 
         users = User.objects.filter(username__icontains=search_text, accept_anonymous_message=True)
-        users = random.sample(list(users), users.count())
 
-        # select only 10 users if query has more than 20 users
-        if len(users) >= 20:
-            users = users[:10]
-        
-        results = [user.serialize() for user in users]
+        if self.on_typing is True:
+            users = random.sample(list(users), users.count())
+            # select only 10 users if query has more than 20 users
+            if len(users) >= 20:
+                users = users[:10]      
 
-        return Response({"results": results}, status=200)
+            results = [user.serialize() for user in users]
+            return Response({"results": results}, status=200)
+        else:
+            page = request.query_params.get("page")
+            paginator = Paginator(list(users), per_page=10)
+            users = paginator.get_page(page)
+ 
+            results = [user.serialize() for user in users]
+            return Response({"results": results, "total_pages": paginator.num_pages}, status=200)
+
+
+# search when Enter key press
+class SearchUserAcceptAnonymousMessage(SearchUserAcceptAnonymousMessageOnTyping):
+    on_typing = False
 
 
 class SendUserConnectionRequest(APIView):

@@ -22,7 +22,6 @@
 
               <v-menu
                 v-model="showMenu"
-                full-width
                 absolute
                 :min-width="menuWidth"
                 :position-x="menuPositionX"
@@ -109,6 +108,65 @@
         </v-row>
       </div>
     </div>
+
+    <v-dialog v-model="showSearchedResultsDialog" width="550" persistent>
+      <v-card width="550" class="px-4 py-4 white--text" dark>
+        <v-list v-if="users.length > 0">
+          <v-list-item
+            v-for="(user, index) in users"
+            :key="index"
+            class="listItem"
+          >
+            <v-list-item-title>
+              <v-avatar size="28" color="white">
+                <v-img
+                  v-if="user.profile_url == ''"
+                  :src="require(`../../public/userimg.png`)"
+                ></v-img>
+                <v-img v-else :src="user.profile_url"></v-img>
+              </v-avatar>
+              <span class="ml-2">
+                {{ user.username }}
+              </span>
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <v-list v-else class="text-center">
+          <v-list-item class="text-center">Not Found</v-list-item>
+        </v-list>
+      </v-card>
+
+      <v-card-actions>
+        <v-btn
+          small
+          class="white--text text-capitalize"
+          dark
+          @click="closeDialog()"
+          >Close</v-btn
+        >
+
+        <span class="ml-auto">
+          <v-btn
+            v-if="currentPage > 1 && currentPage <= totalPages"
+            small
+            class="white--text text-capitalize mr-2"
+            dark
+            @click="previousPageButtonOnClick()"
+          >
+            Previous
+          </v-btn>
+          <v-btn
+            v-if="currentPage >= 1 && currentPage < totalPages"
+            small
+            class="white--text text-capitalize"
+            dark
+            @click="nextPageButtonOnClick()"
+          >
+            Next
+          </v-btn>
+        </span>
+      </v-card-actions>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -127,12 +185,23 @@ export default {
     users: [],
     searchText: "",
     totalPages: 0,
+    currentPage: 1,
 
     showMenu: false,
     menuWidth: null,
     menuPositionX: null,
     menuPositionY: null,
+
+    showSearchedResultsDialog: false,
   }),
+
+  created() {
+    document.addEventListener("keyup", (event) => {
+      if (event.key === "Enter") {
+        this.searchUsersAcceptAnonymousMessage();
+      }
+    });
+  },
 
   methods: {
     findSearchElementPosition: function () {
@@ -147,6 +216,7 @@ export default {
       };
     },
 
+    // search when typing
     searchUsersAcceptAnonymousMessageOnTyping: function () {
       if (this.searchText.trim() != "") {
         let position = this.findSearchElementPosition();
@@ -173,6 +243,43 @@ export default {
         this.menuPositionX = null;
         this.menuPositionY = null;
       }
+    },
+
+    // search when enter key press
+    searchUsersAcceptAnonymousMessage: function () {
+      if (this.searchText.trim() != "") {
+        axios
+          .get("api-users/search-users-accept-anonymous-message/", {
+            params: {
+              search_text: this.searchText,
+              page: this.currentPage,
+            },
+          })
+          .then((res) => {
+            if (res.data["results"]) {
+              this.users = res.data["results"];
+              this.totalPages = res.data["total_pages"];
+              this.showSearchedResultsDialog = true;
+              this.showMenu = false;
+            }
+          });
+      }
+    },
+
+    nextPageButtonOnClick: function () {
+      this.currentPage = this.currentPage + 1;
+      this.searchUsersAcceptAnonymousMessage();
+    },
+
+    previousPageButtonOnClick: function () {
+      this.currentPage = this.currentPage - 1;
+      this.searchUsersAcceptAnonymousMessage();
+    },
+
+    closeDialog: function () {
+      this.currentPage = 1;
+      this.showSearchedResultsDialog = false;
+      this.totalPages = 0;
     },
   },
 };
