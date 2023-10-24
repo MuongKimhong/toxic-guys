@@ -228,7 +228,7 @@ class GetRandomUsers(APIView):
         page = request.query_params.get("page")
 
         if cache.get("random_users") is None:
-            users = User.objects.all()
+            users = User.objects.all().exclude(id=token_verification(request))
             random_users = random.sample(list(users), users.count())
             cache.set("random_users", random_users, TWENTY_MINUTES_IN_SECONDS)
         else:
@@ -302,10 +302,10 @@ class SearchUserAcceptAnonymousMessage(SearchUserAcceptAnonymousMessageOnTyping)
 class SendUserConnectionRequest(APIView):
     permission_classes = [ IsAuthenticated ]
 
-    def get(self, request):
+    def post(self, request):
         # user to be connected with
         try:
-            user_to_be_connected = User.objects.get(id=request.data["user_to_be_connected_id"])
+            user_to_be_connected = User.objects.get(id=int(request.data["user_to_be_connected_id"]))
         except User.DoesNotExist:
             return Response({"user_not_found": True}, status=400)
 
