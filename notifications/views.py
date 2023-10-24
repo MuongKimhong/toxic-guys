@@ -1,3 +1,13 @@
-from django.shortcuts import render
+from notifications.models import Notification
 
-# Create your views here.
+
+def send_notification_request(sender, receiver, text, _type=None):
+
+    notification = Notification.objects.get_or_create(
+        sender = sender,
+        receiver = receiver,
+        text = text
+    )
+    if _type is not None:
+        notification._type = _type
+        notification.save()

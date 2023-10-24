@@ -10,6 +10,8 @@ import random
 import jwt
 
 from users.models import *
+from notifications.models import *
+from notifications.views import send_notification_request
 
 
 TWENTY_MINUTES_IN_SECONDS = 20 * 60
@@ -329,6 +331,8 @@ class SendUserConnectionRequest(APIView):
     permission_classes = [ IsAuthenticated ]
 
     def post(self, request):
+        user = User.objects.get(id=token_verification(request))
+
         # user to be connected with
         try:
             user_to_be_connected = User.objects.get(id=int(request.data["user_to_be_connected_id"]))
@@ -337,6 +341,11 @@ class SendUserConnectionRequest(APIView):
 
         user_connection = UserConnection.objects.get_or_create(
             user_id=token_verification(request), connection=user_to_be_connected
+        )
+        send_notification_request(
+            sender=user, 
+            receiver=user_to_be_connected, 
+            text=f"{user.username} wants to connect with you"
         )
         return Response({"request_sent": True}, status=200)
 
