@@ -16,7 +16,7 @@
                 append-icon="mdi-account-search"
                 id="search-element"
                 v-model="searchText"
-                @keyup="searchUsersAcceptAnonymousMessage()"
+                @keyup="searchUsersAcceptAnonymousMessageOnTyping()"
               >
               </v-text-field>
 
@@ -132,13 +132,6 @@ export default {
     menuWidth: null,
     menuPositionX: null,
     menuPositionY: null,
-
-    items: [
-      { title: "Click Me" },
-      { title: "Click Me" },
-      { title: "Click Me" },
-      { title: "Click Me 2" },
-    ],
   }),
 
   methods: {
@@ -154,26 +147,24 @@ export default {
       };
     },
 
-    searchUsersAcceptAnonymousMessage: function () {
+    searchUsersAcceptAnonymousMessageOnTyping: function () {
       if (this.searchText.trim() != "") {
-        this.menuWidth = this.findSearchElementPosition()["width"];
-        this.menuPositionX = this.findSearchElementPosition()["positionX"];
-        this.menuPositionY =
-          this.findSearchElementPosition()["positionY"] +
-          this.findSearchElementPosition()["height"];
+        let position = this.findSearchElementPosition();
+
+        this.menuWidth = position["width"];
+        this.menuPositionX = position["positionX"];
+        this.menuPositionY = position["positionY"] + position["height"];
         this.showMenu = true;
 
         axios
-          .get("api-users/search-users-accept-anonymous-message/", {
+          .get("api-users/search-users-accept-anonymous-message-on-typing/", {
             params: {
               search_text: this.searchText,
-              page: 1,
             },
           })
           .then((res) => {
             if (res.data["results"]) {
               this.users = res.data["results"];
-              this.totalPages = res.data["total_pages"];
             }
           });
       } else {
@@ -181,7 +172,6 @@ export default {
         this.menuWidth = null;
         this.menuPositionX = null;
         this.menuPositionY = null;
-        this.totalPages = 0;
       }
     },
   },

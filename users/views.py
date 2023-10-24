@@ -264,7 +264,7 @@ class SearchUser(APIView):
         return Response({"results": results, "total_pages": paginator.num_pages}, status=200)
 
 
-class SearchUserAcceptAnonymousMessage(APIView):
+class SearchUserAcceptAnonymousMessageOnTyping(APIView):
     permission_classes = [ AllowAny ]
 
     def get(self, request):
