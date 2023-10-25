@@ -40,29 +40,39 @@
         </v-btn>
       </div>
 
-      <v-menu
-        v-model="showNotificationMenu"
-        absolute
-        :min-width="notificationMenu.width"
-        :position-x="notificationMenu.positionX"
-        :position-y="notificationMenu.positionY"
-      >
-        <v-list v-if="notifications.length > 0">
-          <v-list-item
-            v-for="(notification, index) in notifications"
-            :key="index"
-          >
-            <v-list-item-title>
-              {{ notification.text }}
-            </v-list-item-title>
-          </v-list-item>
-        </v-list>
-        <v-list v-else>
-          <v-list-item>
-            <v-list-item-title>No new notifications</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <v-dialog v-model="showNotificationDialog" width="350" height="450">
+        <v-card class="py-2 px-2 white--text" width="350" height="450" dark>
+          <v-list>
+            <v-list-item
+              v-for="(notification, index) in notifications"
+              :key="index"
+            >
+              <v-list-item-title v-if="notification.type == 'connection'">
+                <v-avatar size="26" color="white">
+                  <v-img
+                    v-if="notification.sender.profile_url == ''"
+                    :src="require('../../public/userimg.png')"
+                  ></v-img>
+                  <v-img v-else :src="notification.sender.profile_url"></v-img>
+                </v-avatar>
+
+                <span class="ml-2">{{ notification.text }}</span>
+
+                <div class="mt-3 text-center">
+                  <v-btn x-small class="text-capitalize white--text red mr-2">
+                    Reject
+                  </v-btn>
+                  <v-btn x-small class="text-capitalize white--text green ml-2">
+                    Accept
+                  </v-btn>
+                </div>
+              </v-list-item-title>
+
+              <v-list-item-title v-else>Hello</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-dialog>
 
       <!-- not signed in -->
       <div
@@ -83,12 +93,7 @@ export default {
   name: "Navbar",
 
   data: () => ({
-    showNotificationMenu: false,
-    notificationMenu: {
-      width: 300,
-      positionX: null,
-      positionY: null,
-    },
+    showNotificationDialog: false,
 
     notifications: [],
   }),
@@ -127,21 +132,17 @@ export default {
           .then((res) => {
             if (res.data["notifications"]) {
               this.notifications = res.data["notifications"];
-              this.showNotificationMenu = true;
+              this.showNotificationDialog = true;
             }
           });
       } else {
-        this.showNotificationMenu = true;
+        this.showNotificationDialog = true;
       }
     },
 
     notificationBtnOnClick: function () {
-      let btnElement = document.getElementById("notification-btn");
-      let rect = btnElement.getBoundingClientRect();
-      this.notificationMenu["positionX"] = rect.left;
-      this.notificationMenu["positionY"] = rect.top + 50;
-      if (this.showNotificationMenu == false) this.getNotifications();
-      else this.showNotificationMenu = false;
+      if (this.showNotificationDialog == false) this.getNotifications();
+      else this.showNotificationDialog = false;
     },
   },
 };
