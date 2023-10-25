@@ -344,6 +344,26 @@ class SendUserConnectionRequest(APIView):
         return Response({"request_sent": True}, status=200)
 
 
+class UnsendConnectionRequest(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        # user to be unconnected with
+        try:
+            user_to_be_unconnected = User.objects.get(id=int(request.data["user_to_be_unconnected_id"]))
+        except User.DoesNotExist:
+            return Response({"user_not_found": True}, status=400)
+
+        try:
+            user_connection = UserConnection.objects.get(
+                user_id=token_verification(request), connection=user_to_be_unconnected
+            )
+            user_connection.delete()
+            return Response({"success": True}, status=200)
+        except UserConnection.DoesNotExist:
+            return Response({"connection_not_found": True}, status=400) 
+
+
 class GetAllConnectionRequests(APIView):
     permission_classes = [ IsAuthenticated ]
 

@@ -44,6 +44,7 @@
                     v-if="user.request_pending == true"
                     small
                     class="dark-grey white--text text-capitalize"
+                    @click="unsendConnectionRequest(user.id, index)"
                   >
                     Request sent
                   </v-btn>
@@ -179,7 +180,29 @@ export default {
             this.users[index]["request_pending"] = true;
             this.$store.state.webSocket.emit("connection-request", userId);
           }
-        });
+        })
+        .catch(() => {});
+    },
+
+    unsendConnectionRequest: function (userId, index) {
+      axios
+        .post(
+          "api-users/unsend-user-connection-request/",
+          {
+            user_to_be_unconnected_id: userId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.data["success"]) {
+            this.users[index]["request_pending"] = false;
+          }
+        })
+        .catch(() => {});
     },
   },
 };
