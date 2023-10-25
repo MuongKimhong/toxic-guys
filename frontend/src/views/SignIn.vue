@@ -37,6 +37,7 @@
 
             <div class="mt-5 text-center mr-auto ml-auto">
               <v-btn
+                id="signin-btn"
                 class="text-capitalize white--text"
                 style="background-color: rgb(78, 78, 78)"
                 @click="signIn()"
@@ -78,7 +79,7 @@ export default {
   created() {
     document.addEventListener("keyup", (event) => {
       if (event.key === "Enter") {
-        this.signIn();
+        document.getElementById("signin-btn").click();
       }
     });
   },

@@ -8,6 +8,7 @@ class Notification(models.Model):
     receiver = models.ForeignKey(User, related_name="notification_receiver", on_delete=models.CASCADE)
     _type = models.CharField(max_length=100, default="connection") # type of notification 
     text  = models.TextField()
+    seen_by_receiver = models.BooleanField(default=False)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def serialize(self):
@@ -17,5 +18,6 @@ class Notification(models.Model):
             "receiver": self.receiver.serialize(),
             "type": self._type,
             "text": self.text,
+            "seen_by_receiver": self.seen_by_receiver,
             "created_date": date_format(self.created_date)
         }

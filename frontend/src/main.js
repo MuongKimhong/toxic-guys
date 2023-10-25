@@ -20,7 +20,7 @@ Vue.prototype.$authenticateUser = async function (username, password) {
 
     // make sure store.commit finish operation
     setTimeout(() => {
-      router.push({ name: "Home" })
+      router.push({ name: "Home" }).catch(() => { });
     }, 200)
 
     return true;

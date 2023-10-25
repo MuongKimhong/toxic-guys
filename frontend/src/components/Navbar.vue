@@ -26,8 +26,8 @@
           <span class="text-capitalize mr-1 white--text">Anonymous</span>
           <i class="fas fa-question white--text"></i>
         </v-btn>
-        <v-btn text @click="$router.push({ name: 'Profile' })">
-          <span class="text-capitalize mr-1 white--text">Notifications</span>
+        <v-btn text @click="notificationBtnOnClick()" id="notification-btn">
+          <span class="text-capitalize mr-1 white--text"> Notifications </span>
           <i class="fas fa-bell white--text"></i>
         </v-btn>
         <v-btn text @click="$router.push({ name: 'Profile' })">
@@ -39,6 +39,31 @@
           <i class="fas fa-sign-out-alt white--text"></i>
         </v-btn>
       </div>
+
+      <v-menu
+        v-model="showNotificationMenu"
+        absolute
+        :min-width="notificationMenu.width"
+        :position-x="notificationMenu.positionX"
+        :position-y="notificationMenu.positionY"
+      >
+        <v-list v-if="notifications.length > 0">
+          <v-list-item
+            v-for="(notification, index) in notifications"
+            :key="index"
+          >
+            <v-list-item-title>
+              {{ notification.text }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <v-list v-else>
+          <v-list-item>
+            <v-list-item-title>No new notifications</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
       <!-- not signed in -->
       <div
         v-if="$store.state.user.accessToken == null && $route.name != 'SignIn'"
@@ -56,6 +81,17 @@ import axios from "axios";
 
 export default {
   name: "Navbar",
+
+  data: () => ({
+    showNotificationMenu: false,
+    notificationMenu: {
+      width: 300,
+      positionX: null,
+      positionY: null,
+    },
+
+    notifications: [],
+  }),
 
   methods: {
     signOut: function () {
@@ -78,6 +114,34 @@ export default {
           }
         })
         .catch(() => {});
+    },
+
+    getNotifications: function () {
+      if (this.notifications.length == 0) {
+        axios
+          .get("api-notifications/get-all-notifications/", {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          })
+          .then((res) => {
+            if (res.data["notifications"]) {
+              this.notifications = res.data["notifications"];
+              this.showNotificationMenu = true;
+            }
+          });
+      } else {
+        this.showNotificationMenu = true;
+      }
+    },
+
+    notificationBtnOnClick: function () {
+      let btnElement = document.getElementById("notification-btn");
+      let rect = btnElement.getBoundingClientRect();
+      this.notificationMenu["positionX"] = rect.left;
+      this.notificationMenu["positionY"] = rect.top + 50;
+      if (this.showNotificationMenu == false) this.getNotifications();
+      else this.showNotificationMenu = false;
     },
   },
 };
