@@ -99,11 +99,7 @@ export default {
   }),
 
   created() {
-    this.$webSocket.on("connection-request", (userToBeConnectedId) => {
-      if (this.$store.state.user.id == userToBeConnectedId) {
-        console.log("new connection notification");
-      }
-    });
+    this.listenToWebSocketEventHandling();
   },
 
   methods: {
@@ -151,6 +147,14 @@ export default {
     notificationBtnOnClick: function () {
       if (this.showNotificationDialog == false) this.getNotifications();
       else this.showNotificationDialog = false;
+    },
+
+    listenToWebSocketEventHandling: function () {
+      this.$webSocket.on("connection-request", (userToBeConnectedId) => {
+        if (this.$store.state.user.id == userToBeConnectedId) {
+          console.log("new connection notification");
+        }
+      });
     },
   },
 };
