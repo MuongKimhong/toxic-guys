@@ -177,6 +177,7 @@ export default {
         .then((res) => {
           if (res.data["request_sent"]) {
             this.users[index]["request_pending"] = true;
+            this.$store.state.webSocket.emit("connection-request", userId);
           }
         });
     },

@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 import axios from 'axios'
+import socket from "./socket.js";
 
 axios.defaults.baseURL = "http://localhost:8000/"
 
@@ -33,6 +34,8 @@ Vue.prototype.$authenticateUser = async function (username, password) {
 Vue.prototype.$updateToken = function (newToken) {
   store.commit("updateOnlyUserToken", newToken);
 }
+
+Vue.prototype.$webSocket = socket;
 
 new Vue({
   router,

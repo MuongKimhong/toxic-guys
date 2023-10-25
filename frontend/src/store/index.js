@@ -11,6 +11,7 @@ const vuexLocal = new VuexPersistence({
 export default new Vuex.Store({
   state: {
     webSocketServer: "http://localhost:3000",
+    webSocket: null,
 
     user: {
       id: null,
@@ -59,6 +60,10 @@ export default new Vuex.Store({
         accessToken: null,
         refreshToken: null
       }
+    },
+
+    updateWebSocketInstance(state, webSocketObject) {
+      state.webSocket = webSocketObject;
     }
   },
   actions: {
