@@ -98,6 +98,14 @@ export default {
     notifications: [],
   }),
 
+  created() {
+    this.$webSocket.on("connection-request", (userToBeConnectedId) => {
+      if (this.$store.state.user.id == userToBeConnectedId) {
+        console.log("new connection notification");
+      }
+    });
+  },
+
   methods: {
     signOut: function () {
       axios

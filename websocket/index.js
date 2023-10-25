@@ -22,5 +22,18 @@ app.use(express.json())
 
 // listening to the port
 server.listen(devPort, () => {
-    console.log("Websocket evelopment server started")
+    console.log("Websocket development server started")
 });
+
+// use socket.emit so that client emitter can receive 
+// use socket.broadcast so that other clients beside emiiter can receive
+
+
+socketIO.on("connection", (socket) => {
+    console.log(socket.id);
+
+    // listen to friend request
+    socket.on("send-connection-request", (userToBeConnectedId) => {
+        socket.broadcast.emit("connection-request", userToBeConnectedId);
+    })
+})
