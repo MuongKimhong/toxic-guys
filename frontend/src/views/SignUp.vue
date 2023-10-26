@@ -61,6 +61,7 @@
 
             <div class="mt-5 text-center mr-auto ml-auto">
               <v-btn
+                id="signup-btn"
                 class="text-capitalize white--text"
                 style="background-color: rgb(78, 78, 78)"
                 @click="signUp()"
@@ -95,6 +96,14 @@ export default {
       confirmPassword: "",
     },
   }),
+
+  created() {
+    document.addEventListener("keyup", (event) => {
+      if (event.key === "Enter") {
+        document.getElementById("signup-btn").click();
+      }
+    });
+  },
 
   methods: {
     comparePassword: function () {
