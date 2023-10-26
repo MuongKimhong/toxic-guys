@@ -383,6 +383,12 @@ class AcceptOrRejectConnectionRequest(APIView):
         if request.data["response"] == "accept":
             user_connection.is_accepted = True
             user_connection.save()
+
+            send_notification(
+                user_connection.connection,
+                user_connection.user,
+                f"{user_connection.connection.username} has accepted your connection request"
+            )
             return Response({"accepted": True}, status=200)
         elif request.data["response"] == "reject":
             user_connection.delete()
