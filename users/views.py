@@ -378,6 +378,16 @@ class GetAllConnectionRequests(APIView):
 class AcceptOrRejectConnectionRequest(APIView):
     permission_classes = [ IsAuthenticated ]
 
+    def delete_notification(request):
+        if request.data.get("notification_id") is None:
+            return None
+
+        try:
+            notification = Notification.objects.get(id=request.data.get("notification_id"))
+            notification.delete()
+        except Notification.DoesNotExist: 
+            return None
+
     # resposne to connection request
     def check_response_status(user_connection, request):
         if request.data["response"] == "accept":
@@ -389,9 +399,11 @@ class AcceptOrRejectConnectionRequest(APIView):
                 user_connection.user,
                 f"{user_connection.connection.username} has accepted your connection request"
             )
+            self.delete_notification(request)
             return Response({"accepted": True}, status=200)
         elif request.data["response"] == "reject":
             user_connection.delete()
+            self.delete_notification(request)
             return Response({"rejected": True}, status=200)
         else:
             return Response({"error": True}, status=400)
