@@ -30,10 +30,13 @@ server.listen(devPort, () => {
 
 
 socketIO.on("connection", (socket) => {
-    console.log(socket.id);
 
     // listen to friend request
     socket.on("send-connection-request", (userToBeConnectedId) => {
         socket.broadcast.emit("connection-request", userToBeConnectedId);
+    })
+
+    socket.on("connection-accepted", (requestSenderId) => {
+        socket.broadcast.emit("accepted", requestSenderId);
     })
 })

@@ -97,6 +97,20 @@
                 </div>
               </v-list-item-title>
 
+              <v-list-item-title
+                v-else-if="notification.type == 'connection-accept'"
+              >
+                <v-avatar size="26" color="white">
+                  <v-img
+                    v-if="notification.sender.profile_url == ''"
+                    :src="require('../../public/userimg.png')"
+                  ></v-img>
+                  <v-img v-else :src="notification.sender.profile_url"></v-img>
+                </v-avatar>
+
+                <span class="ml-2">{{ notification.text }}</span>
+              </v-list-item-title>
+
               <v-list-item-title v-else>Hello</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -206,6 +220,16 @@ export default {
           }
         }
       });
+
+      this.$webSocket.on("accepted", (requestSenderId) => {
+        if (this.$store.state.user.id == requestSenderId) {
+          if (this.showNotificationDialog == false) {
+            this.totalUnSeenNotification = this.totalUnSeenNotification + 1;
+          } else if (this.showNotificationDialog == true) {
+            this.getNotifications();
+          }
+        }
+      });
     },
 
     acceptOrRejectConnectionRequest: function (
@@ -237,8 +261,13 @@ export default {
           }
         )
         .then((res) => {
-          if (res.data) {
-            this.notifications.splice(index, 1);
+          if (res.data) this.notifications.splice(index, 1);
+
+          if (res.data["accepted"] === true) {
+            this.$webSocket.emit(
+              "connection-accepted",
+              notificationObj.sender.id
+            );
           }
         })
         .catch(() => {});

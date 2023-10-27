@@ -10,7 +10,7 @@ from users.utils import token_verification
 
 def send_notification(sender, receiver, text, _type=None):
 
-    notification = Notification.objects.get_or_create(
+    notification, created = Notification.objects.get_or_create(
         sender = sender,
         receiver = receiver,
         text = text
