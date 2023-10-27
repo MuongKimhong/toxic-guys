@@ -49,7 +49,7 @@
 
       <v-dialog v-model="showNotificationDialog" width="350" height="450">
         <v-card class="py-2 px-2 white--text" width="350" height="450" dark>
-          <v-list>
+          <v-list v-if="notifications.length > 0">
             <v-list-item
               v-for="(notification, index) in notifications"
               :key="index"
@@ -114,6 +114,7 @@
               <v-list-item-title v-else>Hello</v-list-item-title>
             </v-list-item>
           </v-list>
+          <v-list v-else class="text-center mt-5"> No notifications </v-list>
         </v-card>
       </v-dialog>
 
