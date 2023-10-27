@@ -28,7 +28,14 @@
         </v-btn>
         <v-btn text @click="notificationBtnOnClick()" id="notification-btn">
           <span class="text-capitalize mr-1 white--text"> Notifications </span>
-          <i class="fas fa-bell white--text"></i>
+          <v-badge
+            v-if="totalUnSeenNotification > 0"
+            :content="totalUnSeenNotification"
+            color="error"
+          >
+            <i class="fas fa-bell white--text"></i>
+          </v-badge>
+          <i v-else class="fas fa-bell white--text"></i>
         </v-btn>
         <v-btn text @click="$router.push({ name: 'Profile' })">
           <span class="text-capitalize mr-1 white--text">Profile</span>
@@ -123,6 +130,7 @@ export default {
 
   created() {
     this.listenToWebSocketEventHandling();
+    this.getNumberOfUnseenNotifications();
   },
 
   methods: {
@@ -159,7 +167,6 @@ export default {
           .then((res) => {
             if (res.data["notifications"]) {
               this.notifications = res.data["notifications"];
-              this.totalUnSeenNotification = res.data["total_unseen"];
               this.showNotificationDialog = true;
 
               this.markNotificationAsSeenByReceiver(); // after open notifications, mark all as seen
@@ -170,6 +177,20 @@ export default {
       }
     },
 
+    getNumberOfUnseenNotifications: function () {
+      axios
+        .get("api-notifications/get-number-of-unseen-notifications/", {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+          },
+        })
+        .then((res) => {
+          if (res.data["total_unseen"]) {
+            this.totalUnSeenNotification = res.data["total_unseen"];
+          }
+        });
+    },
+
     notificationBtnOnClick: function () {
       if (this.showNotificationDialog == false) this.getNotifications();
       else this.showNotificationDialog = false;
@@ -178,7 +199,11 @@ export default {
     listenToWebSocketEventHandling: function () {
       this.$webSocket.on("connection-request", (userToBeConnectedId) => {
         if (this.$store.state.user.id == userToBeConnectedId) {
-          console.log("new connection notification");
+          if (this.showNotificationDialog == false) {
+            this.totalUnSeenNotification = this.totalUnSeenNotification + 1;
+          } else if (this.showNotificationDialog == true) {
+            this.getNotifications();
+          }
         }
       });
     },
