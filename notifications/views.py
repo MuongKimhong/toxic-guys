@@ -30,9 +30,17 @@ class GetAllNotifications(APIView):
             return Response({"token_error": True}, status=400)
         
         notifications = Notification.objects.filter(receiver__id=user.id).order_by("-id")
-        notifications = [notification.serialize() for notification in notifications]
 
-        return Response({"notifications": notifications}, status=200)
+        notifications_serialize = []
+        total_unseen = 0
+
+        for notification in notifications:
+            if notification.seen_by_receiver is False:
+                total_unseen = total_unseen + 1
+            
+            notifications_serialize.append(notification.serialize())
+
+        return Response({"notifications": notifications_serialize, "total_unseen": total_unseen}, status=200)
 
 
 class MarkNotificationsAsSeenByReceiver(APIView):

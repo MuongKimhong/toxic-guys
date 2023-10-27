@@ -159,7 +159,10 @@ export default {
           .then((res) => {
             if (res.data["notifications"]) {
               this.notifications = res.data["notifications"];
+              this.totalUnSeenNotification = res.data["total_unseen"];
               this.showNotificationDialog = true;
+
+              this.markNotificationAsSeenByReceiver(); // after open notifications, mark all as seen
             }
           });
       } else {
