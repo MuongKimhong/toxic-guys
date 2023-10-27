@@ -359,6 +359,10 @@ class UnsendConnectionRequest(APIView):
                 user_id=token_verification(request), connection=user_to_be_unconnected
             )
             user_connection.delete()
+
+            notification = Notification.objects.get(sender__id=token_verification(request), receiver__id=user_to_be_unconnected.id)
+            notification.delete()
+
             return Response({"success": True}, status=200)
         except UserConnection.DoesNotExist:
             return Response({"connection_not_found": True}, status=400) 
