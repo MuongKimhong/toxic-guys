@@ -59,17 +59,31 @@
                 <span class="ml-2">{{ notification.text }}</span>
 
                 <div class="mt-3 text-center">
-                  <v-btn 
-                    x-small 
+                  <v-btn
+                    x-small
                     class="text-capitalize white--text red mr-2"
-                    @click="acceptOrRejectConnectionRequest(notification, index, accept=false, reject=true)"
+                    @click="
+                      acceptOrRejectConnectionRequest(
+                        notification,
+                        index,
+                        (accept = false),
+                        (reject = true)
+                      )
+                    "
                   >
                     Reject
                   </v-btn>
-                  <v-btn 
-                    x-small 
-                    class="text-capitalize white--text green ml-2" 
-                    @click="acceptOrRejectConnectionRequest(notification, index, accept=true, reject=false)"
+                  <v-btn
+                    x-small
+                    class="text-capitalize white--text green ml-2"
+                    @click="
+                      acceptOrRejectConnectionRequest(
+                        notification,
+                        index,
+                        (accept = true),
+                        (reject = false)
+                      )
+                    "
                   >
                     Accept
                   </v-btn>
@@ -104,6 +118,7 @@ export default {
     showNotificationDialog: false,
 
     notifications: [],
+    totalUnSeenNotification: 0, // number of notification that haven't seen by receiver
   }),
 
   created() {
@@ -165,8 +180,13 @@ export default {
       });
     },
 
-    acceptOrRejectConnectionRequest: function (notificationObj, index, accept=false, reject=false) {
-      if ((accept === false) && (reject === false)) {
+    acceptOrRejectConnectionRequest: function (
+      notificationObj,
+      index,
+      accept = false,
+      reject = false
+    ) {
+      if (accept === false && reject === false) {
         return;
       }
       var status = "";
@@ -174,21 +194,45 @@ export default {
       if (accept === true) status = "accept";
       else if (reject === true) status = "reject";
 
-      axios.post("api-users/accept-or-reject-connection-request/", {
-        request_sender_id: notificationObj.sender.id,
-        response: status,
-        notification_id: notificationObj.id
-      },
-      {
-        headers: { Authorization: `Bearer ${this.$store.state.user.accessToken}` }
-      })
-      .then((res) => {
-        if (res.data) {
-          this.notifications.splice(index, 1);
-        }
-      })
-      .catch(() => {})
-    }
+      axios
+        .post(
+          "api-users/accept-or-reject-connection-request/",
+          {
+            request_sender_id: notificationObj.sender.id,
+            response: status,
+            notification_id: notificationObj.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.data) {
+            this.notifications.splice(index, 1);
+          }
+        })
+        .catch(() => {});
+    },
+
+    markNotificationAsSeenByReceiver: function () {
+      axios
+        .post(
+          "api-notifications/mark-notification-as-seen-by-receiver/",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.data["seen_all"]) {
+            this.totalUnSeenNotification = 0;
+          }
+        });
+    },
   },
 };
 </script>

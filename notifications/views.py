@@ -33,3 +33,17 @@ class GetAllNotifications(APIView):
         notifications = [notification.serialize() for notification in notifications]
 
         return Response({"notifications": notifications}, status=200)
+
+
+class MarkNotificationsAsSeenByReceiver(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        notifications = Notification.objects.filter(receiver__id=token_verification(request))
+        
+        for notification in notifications:
+            if notification.seen_by_receiver is False:
+                notification.seen_by_receiver = True
+                notification.save()
+        
+        return Response({"seen_all": True}, status=200)
