@@ -144,8 +144,10 @@ export default {
   }),
 
   created() {
-    this.listenToWebSocketEventHandling();
-    this.getNumberOfUnseenNotifications();
+    if (this.$store.state.user.accessToken != null) {
+      this.listenToWebSocketEventHandling();
+      this.getNumberOfUnseenNotifications();
+    }
   },
 
   methods: {
