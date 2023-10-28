@@ -428,3 +428,19 @@ class AcceptOrRejectConnectionRequest(APIView):
             return Response({"request_not_found": True}, status=400)
 
         return self.check_response_status(user_connection, request)
+
+
+# get all friends
+class GetAllConnections(APIView):
+    permission_classes = [ IsAuthenticated ]
+    
+    def get(self, request):
+        try:
+            user = User.objects.get(id=token_verification(request))
+        except User.DoesNotExist:
+            return Response({"error": True}, status=400)
+        
+        user_connections = UserConnection.objects.filter(user__id=user.id).order_by("-id")
+        user_connections = [connection.serialize() for connection in user_connections]
+
+        return Response({"connections": user_connections}, status=200)

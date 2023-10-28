@@ -10,6 +10,7 @@ urlpatterns = [
     path("update-email-username/", UpdateEmailAndUsername.as_view()),
 
     path("get-random-users/", GetRandomUsers.as_view()),
+    path("get-all-connections/", GetAllConnections.as_view()),
     path("search-users/", SearchUser.as_view()),
     path("search-users-accept-anonymous-message-on-typing/", SearchUserAcceptAnonymousMessageOnTyping.as_view()),
     path("search-users-accept-anonymous-message/", SearchUserAcceptAnonymousMessage.as_view()),
