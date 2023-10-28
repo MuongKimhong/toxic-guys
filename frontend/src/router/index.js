@@ -8,8 +8,8 @@ import SignUp from "../views/SignUp.vue";
 import Home from '../views/Home.vue';
 import Profile from "../views/Profile.vue";
 import Messages from "../views/Messages.vue";
-import Notifications from "../views/Notifications.vue";
 import FindConnection from "../views/FindConnection.vue";
+import CreateNewGroup from "../views/CreateNewGroup.vue";
 
 Vue.use(VueRouter)
 
@@ -47,9 +47,9 @@ const routes = [
     },
   },
   {
-    path: "/notifications",
-    name: "Notifications",
-    component: Notifications,
+    path: "/create-new-group",
+    name: "CreateNewGroup",
+    component: CreateNewGroup,
     beforeEnter: (to, from, next) => {
       if (store.state.user.accessToken == null) next({ name: 'SignIn' });
       else next();

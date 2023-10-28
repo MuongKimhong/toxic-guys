@@ -3,7 +3,11 @@
     <v-row align="center" justify-content="center">
       <v-col cols="12" class="mr-auto ml-auto">
         <div class="text-right mt-2">
-          <v-btn small class="mr-4 green text-capitalize white--text">
+          <v-btn
+            small
+            class="mr-4 green text-capitalize white--text"
+            @click="$router.push({ name: 'CreateNewGroup' }).catch(() => {})"
+          >
             New group
           </v-btn>
           <v-btn
