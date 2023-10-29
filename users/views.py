@@ -3,6 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from django.core.paginator import Paginator
+from django.core.cache import cache
 from rest_framework.views import APIView
 
 from rest_framework import parsers
@@ -224,7 +225,7 @@ class GetRandomUsers(APIView):
         page = request.query_params.get("page")
 
         if cache.get("random_users") is None:
-            create_random_users_cache(request)
+            random_users = create_random_users_cache(request)
         else:
             random_users = cache.get("random_users")
 

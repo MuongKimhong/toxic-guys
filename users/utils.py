@@ -1,5 +1,5 @@
 from django.core.cache import cache
-from users.models import User
+from users.models import User, UserConnection
 import random
 import jwt
 
@@ -35,3 +35,4 @@ def create_random_users_cache(request):
 
     random_users = random.sample(not_connected_users, len(not_connected_users))
     cache.set("random_users", random_users, TWENTY_MINUTES_IN_SECONDS)
+    return random_users
