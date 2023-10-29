@@ -89,15 +89,20 @@
                         v-for="(connection, index) in connections"
                         :key="index"
                       >
-                        <td v-if="user.id != $store.state.user.id">
+                        <td>
                           <v-avatar size="28" color="white">
                             <v-img
-                              v-if="user.profile_url == ''"
+                              v-if="connection.connection.profile_url == ''"
                               :src="require('../../public/userimg.png')"
                             ></v-img>
-                            <v-img v-else :src="user.profile_url"></v-img>
+                            <v-img
+                              v-else
+                              :src="connection.connection.profile_url"
+                            ></v-img>
                           </v-avatar>
-                          <span class="ml-2">{{ user.username }}</span>
+                          <span class="ml-2">
+                            {{ connection.connection.username }}
+                          </span>
                         </td>
                         <td class="text-right">
                           <v-btn
@@ -160,7 +165,7 @@ export default {
     currentPage: 1,
     totalPages: 0,
 
-    showConnections: false,
+    showConnections: true,
     showRandomUsers: false,
   }),
 

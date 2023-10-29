@@ -4,13 +4,13 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from django.core.paginator import Paginator
 from rest_framework.views import APIView
-from django.core.cache import cache
+
 from rest_framework import parsers
 import random
 import jwt
 
 from users.models import *
-from users.utils import token_verification
+from users.utils import token_verification, create_random_users_cache
 from notifications.models import *
 from notifications.views import send_notification
 
@@ -224,26 +224,7 @@ class GetRandomUsers(APIView):
         page = request.query_params.get("page")
 
         if cache.get("random_users") is None:
-            users = User.objects.all().exclude(id=token_verification(request))
-            not_connected_users = []
-
-            # we want to get only users that are not connected yet
-            for user in users:
-                user_serialize = user.serialize()
-                try:
-                    user_connection = UserConnection.objects.get(
-                        id=token_verification(request), 
-                        connection__id=user.id,
-                        is_accepted=False
-                    )
-                    user_serialize["request_pending"] = True
-                except UserConnection.DoesNotExist:
-                    user_serialize["request_pending"] = False
-                
-                not_connected_users.append(user_serialize)
-
-            random_users = random.sample(not_connected_users, len(not_connected_users))
-            cache.set("random_users", random_users, TWENTY_MINUTES_IN_SECONDS)
+            create_random_users_cache(request)
         else:
             random_users = cache.get("random_users")
 
@@ -405,7 +386,6 @@ class AcceptOrRejectConnectionRequest(APIView):
                 f"{user_connection.connection.username} has accepted your connection request",
                 _type="connection-accept"
             )
-
             self.delete_notification(request) # delete connection request notification
             return Response({"accepted": True}, status=200)
         elif request.data["response"] == "reject":
