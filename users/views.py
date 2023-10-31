@@ -7,11 +7,12 @@ from django.core.cache import cache
 from rest_framework.views import APIView
 
 from rest_framework import parsers
+from random import sample
 import random
 import jwt
 
 from users.models import *
-from users.utils import token_verification, create_random_users_cache
+from users.utils import token_verification
 from notifications.models import *
 from notifications.views import send_notification
 
@@ -221,18 +222,36 @@ class ChangePassword(APIView):
 class GetRandomUsers(APIView):
     permission_classes = [ IsAuthenticated ]
 
-    def get(self, request): 
+    def get(self, request):
         page = request.query_params.get("page")
+        users = list(User.objects.all().exclude(id=token_verification(request)))
 
-        if cache.get("random_users") is None:
-            random_users = create_random_users_cache(request)
-        else:
-            random_users = cache.get("random_users")
+        random_users = sample(users, len(users))
 
         paginator = Paginator(random_users, per_page=10)
-        random_users = paginator.get_page(page)
-        responses = {"random_users": random_users.object_list, "total_pages": paginator.num_pages}
-        return Response(responses, status=200)
+        random_users = paginator.get_page(page).object_list
+
+        response = []
+
+        # check if user is connected or not connected or request pending
+        for user in random_users:
+            user_serialize = user.serialize()
+            try:
+                user_connection = UserConnection.objects.get(
+                    id=token_verification(request),
+                    connection__id=user.id,
+                )
+                if user_connection.is_accepted is True:
+                    user_serialize["status"] = {"connected": True, "not_connected": False, "request_pending": False}
+                elif user_connection.is_accepted is False:
+                    # user connection has created but still not accepted 
+                    user_serialize["status"] = {"connected": False, "not_connected": False, "request_pending": True}
+            except UserConnection.DoesNotExist:
+                user_serialize["status"] = {"connected": False, "not_connected": True, "request_pending": False}
+
+            response.append(user_serialize)
+
+        return Response({"random_users": response, "total_pages": paginator.num_pages}, status=200) 
 
 
 class SearchUser(APIView):
