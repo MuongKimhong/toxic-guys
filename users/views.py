@@ -256,7 +256,6 @@ class SearchUser(APIView):
 
         response = []
  
-        print(results)
         # check if user is connected or not connected or request pending
         for user in results:
             response.append(check_connection_status(request, user))
@@ -310,17 +309,9 @@ class SendUserConnectionRequest(APIView):
             user_to_be_connected = User.objects.get(id=int(request.data["user_to_be_connected_id"]))
         except User.DoesNotExist:
             return Response({"user_not_found": True}, status=400)
+  
+        user_connection_for_user, created = UserConnection.objects.get_or_create(user=user, connection=user_to_be_connected)
 
-        try:
-            user_connection = UserConnection.objects.get(
-                user=user, connection=user_to_be_connected
-            )
-            print("get")
-        except UserConnection.DoesNotExist:
-            user_connection = UserConnection.objects.create(
-                user=user, connection=user_to_be_connected
-            )
-            print("create")
         send_notification(
             sender=user, 
             receiver=user_to_be_connected, 
@@ -339,14 +330,30 @@ class UnsendConnectionRequest(APIView):
         except User.DoesNotExist:
             return Response({"user_not_found": True}, status=400)
 
+        '''
+        if A unconnnect with B, Delete UserConnection object for both A & B 
+        '''
+
+        try:
+            # utbu is user_to_be_unconnected
+            user_connection_for_utbu = UserConnection.objects.get(
+                user=user_to_be_unconnected, connection__id=token_verification(request)
+            )
+            user_connection_for_utbu.delete()
+        except UserConnection.DoesNotExist:
+            pass
+
         try:
             user_connection = UserConnection.objects.get(
                 user_id=token_verification(request), connection=user_to_be_unconnected
             )
             user_connection.delete()
 
-            notification = Notification.objects.get(sender__id=token_verification(request), receiver__id=user_to_be_unconnected.id)
-            notification.delete()
+            try:
+                notification = Notification.objects.get(sender__id=token_verification(request), receiver__id=user_to_be_unconnected.id)
+                notification.delete()
+            except Notification.DoesNotExist:
+                pass
 
             return Response({"success": True}, status=200)
         except UserConnection.DoesNotExist:
@@ -382,6 +389,11 @@ class AcceptOrRejectConnectionRequest(APIView):
         if request.data["response"] == "accept":
             user_connection.is_accepted = True
             user_connection.save()
+
+            # if B accept the request, create UserConnection object for B with is_accepted=True 
+            user_connection_for_accepter, created = UserConnection.objects.get_or_create(
+                user=user_connection.connection, connection=user_connection.user, is_accepted=True
+            )
 
             # send notification to request sender that request has been acccepted
             send_notification(
