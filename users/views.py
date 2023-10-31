@@ -12,7 +12,7 @@ import random
 import jwt
 
 from users.models import *
-from users.utils import token_verification
+from users.utils import token_verification, check_connection_status
 from notifications.models import *
 from notifications.views import send_notification
 
@@ -235,21 +235,7 @@ class GetRandomUsers(APIView):
 
         # check if user is connected or not connected or request pending
         for user in random_users:
-            user_serialize = user.serialize()
-            try:
-                user_connection = UserConnection.objects.get(
-                    id=token_verification(request),
-                    connection__id=user.id,
-                )
-                if user_connection.is_accepted is True:
-                    user_serialize["status"] = {"connected": True, "not_connected": False, "request_pending": False}
-                elif user_connection.is_accepted is False:
-                    # user connection has created but still not accepted 
-                    user_serialize["status"] = {"connected": False, "not_connected": False, "request_pending": True}
-            except UserConnection.DoesNotExist:
-                user_serialize["status"] = {"connected": False, "not_connected": True, "request_pending": False}
-
-            response.append(user_serialize)
+            response.append(check_connection_status(request, user))
 
         return Response({"random_users": response, "total_pages": paginator.num_pages}, status=200) 
 
@@ -266,25 +252,16 @@ class SearchUser(APIView):
 
         users = User.objects.filter(username__icontains=search_text).exclude(id=token_verification(request)) 
         paginator = Paginator(list(users), per_page=10)
-        results = paginator.get_page(paginator_page)
+        results = paginator.get_page(paginator_page).object_list
 
-        not_connected_users = []
-
-        # we want to get only users that are not connected yet
+        response = []
+ 
+        print(results)
+        # check if user is connected or not connected or request pending
         for user in results:
-            user_serialize = user.serialize()
-            try:
-                user_connection = UserConnection.objects.get(
-                    user__id=token_verification(request),
-                    connection__id=user.id,
-                    is_accepted=False
-                )
-                user_serialize["request_pending"] = True
-            except UserConnection.DoesNotExist:
-                user_serialize["request_pending"] = False 
+            response.append(check_connection_status(request, user))
 
-            not_connected_users.append(user_serialize)
-        return Response({"results": not_connected_users, "total_pages": paginator.num_pages}, status=200)
+        return Response({"results": response, "total_pages": paginator.num_pages}, status=200)
 
 
 # search when user typing
@@ -334,9 +311,16 @@ class SendUserConnectionRequest(APIView):
         except User.DoesNotExist:
             return Response({"user_not_found": True}, status=400)
 
-        user_connection = UserConnection.objects.get_or_create(
-            user_id=token_verification(request), connection=user_to_be_connected
-        )
+        try:
+            user_connection = UserConnection.objects.get(
+                user=user, connection=user_to_be_connected
+            )
+            print("get")
+        except UserConnection.DoesNotExist:
+            user_connection = UserConnection.objects.create(
+                user=user, connection=user_to_be_connected
+            )
+            print("create")
         send_notification(
             sender=user, 
             receiver=user_to_be_connected, 

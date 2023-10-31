@@ -57,89 +57,10 @@
               @change="groupTypeOnChange()"
             ></v-select>
 
-            <v-card
-              v-if="showConnections || showRandomUsers"
-              style="background-color: rgb(75, 75, 75)"
-              class="px-5 py-6"
-              elevation="8"
-            >
-              <v-text-field
-                dark
-                label="Search users"
-                dense
-                outlined
-                append-icon="mdi-account-search"
-              ></v-text-field>
-
-              <div>
-                <v-simple-table
-                  style="background-color: rgb(95, 95, 95)"
-                  dark
-                  class="white--text"
-                >
-                  <template v-slot:default>
-                    <thead>
-                      <tr>
-                        <th class="text-left white--text">Users</th>
-                        <th class="text-left white--text"></th>
-                      </tr>
-                    </thead>
-                    <tbody v-if="showConnections === true">
-                      <tr
-                        v-for="(connection, index) in connections"
-                        :key="index"
-                      >
-                        <td>
-                          <v-avatar size="28" color="white">
-                            <v-img
-                              v-if="connection.connection.profile_url == ''"
-                              :src="require('../../public/userimg.png')"
-                            ></v-img>
-                            <v-img
-                              v-else
-                              :src="connection.connection.profile_url"
-                            ></v-img>
-                          </v-avatar>
-                          <span class="ml-2">
-                            {{ connection.connection.username }}
-                          </span>
-                        </td>
-                        <td class="text-right">
-                          <v-btn
-                            small
-                            class="dark-grey white--text text-capitalize"
-                          >
-                            Connect
-                          </v-btn>
-                        </td>
-                      </tr>
-                    </tbody>
-                    <tbody v-if="showRandomUsers === true">
-                      <tr v-for="(user, index) in randomUsers" :key="index">
-                        <td v-if="user.id != $store.state.user.id">
-                          <v-avatar size="28" color="white">
-                            <v-img
-                              v-if="user.profile_url == ''"
-                              :src="require('../../public/userimg.png')"
-                            ></v-img>
-                            <v-img v-else :src="user.profile_url"></v-img>
-                          </v-avatar>
-                          <span class="ml-2">{{ user.username }}</span>
-                        </td>
-                        <td class="text-right">
-                          <v-btn
-                            small
-                            class="dark-grey white--text text-capitalize"
-                          >
-                            Connect
-                          </v-btn>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </template>
-                </v-simple-table>
-              </div>
-            </v-card>
+            <SearchUserInCreateNewGroup
+              :showSearchUsers="showSearchUsers"
+              :groupType="groupType"
+            />
           </div>
         </div>
       </v-col>
@@ -150,8 +71,14 @@
 <script>
 import axios from "axios";
 
+import SearchUserInCreateNewGroup from "../components/SearchUserInCreateNewGroup.vue";
+
 export default {
   name: "CreateNewGroup",
+
+  components: {
+    SearchUserInCreateNewGroup,
+  },
 
   data: () => ({
     groupImage: null,
@@ -165,6 +92,7 @@ export default {
     currentPage: 1,
     totalPages: 0,
 
+    showSearchUsers: false,
     showConnections: true,
     showRandomUsers: false,
   }),
@@ -185,16 +113,8 @@ export default {
     },
 
     groupTypeOnChange: function () {
-      console.log(this.groupType);
-
-      if (this.groupType === "Private") {
-        this.getAllConnections();
-        this.showRandomUsers = false;
-        this.showConnections = true;
-      } else if (this.groupType === "Public") {
-        this.getRandomUsers();
-        this.showConnections = false;
-        this.showRandomUsers = true;
+      if (this.groupType === "Private" || this.groupType === "Public") {
+        this.showSearchUsers = true;
       }
     },
 

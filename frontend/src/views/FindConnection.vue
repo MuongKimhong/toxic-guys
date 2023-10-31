@@ -185,7 +185,11 @@ export default {
         )
         .then((res) => {
           if (res.data["request_sent"]) {
-            this.users[index]["request_pending"] = true;
+            this.users[index]["status"] = {
+              request_pending: true,
+              not_connected: false,
+              connected: false,
+            };
             this.$webSocket.emit("send-connection-request", userId);
           }
         })
@@ -207,7 +211,11 @@ export default {
         )
         .then((res) => {
           if (res.data["success"]) {
-            this.users[index]["request_pending"] = false;
+            this.users[index]["status"] = {
+              request_pending: false,
+              not_connected: true,
+              connected: false,
+            };
           }
         })
         .catch(() => {});
