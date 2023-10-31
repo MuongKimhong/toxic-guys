@@ -33,7 +33,7 @@
                 </td>
                 <td class="text-right">
                   <v-btn
-                    v-if="user.request_pending == false"
+                    v-if="user.status.not_connected == true"
                     small
                     class="dark-grey white--text text-capitalize"
                     @click="sendConnectionRequest(user.id, index)"
@@ -41,7 +41,15 @@
                     Connect
                   </v-btn>
                   <v-btn
-                    v-if="user.request_pending == true"
+                    v-else-if="user.status.connected == true"
+                    small
+                    class="dark-grey white--text text-capitalize"
+                    @click="unsendConnectionRequest(user.id, index)"
+                  >
+                    Already Connected
+                  </v-btn>
+                  <v-btn
+                    v-else-if="user.status.request_pending == true"
                     small
                     class="dark-grey white--text text-capitalize"
                     @click="unsendConnectionRequest(user.id, index)"
