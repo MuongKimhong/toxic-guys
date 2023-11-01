@@ -44,3 +44,19 @@ class Group(models.Model):
             "creator": self.creator.serialize()
         }
 
+
+class GroupMember(models.Model):
+    group = models.ForeignKey(Group, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE)
+
+
+    def __str__(self):
+        return f"{self.group.name} - user: {self.user.username}"
+
+
+    def serialize(self):
+        return {
+            "group_id": self.group.id,
+            "group_code": self.group.code,
+            "user": self.user.serialize()
+        }
