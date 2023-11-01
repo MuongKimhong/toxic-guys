@@ -13,6 +13,8 @@ class Group(models.Model):
     description = models.TextField(blank=True)
     profile = models.ImageField(upload_to="groups_profiles/", blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
+    is_public = models.BooleanField(default=False)
+    is_private = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Group {self.id} - {self.name}"
@@ -41,7 +43,9 @@ class Group(models.Model):
             "description": self.description,
             "profile": profile_url(self.profile),
             "created_date": date_format(self.created_date),
-            "creator": self.creator.serialize()
+            "creator": self.creator.serialize(),
+            "is_public": self.is_public,
+            "is_private": self.is_private
         }
 
 
@@ -60,3 +64,6 @@ class GroupMember(models.Model):
             "group_code": self.group.code,
             "user": self.user.serialize()
         }
+
+
+class 
