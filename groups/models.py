@@ -27,13 +27,11 @@ class Group(models.Model):
 
         return code
 
-    
     def save(self, *args, **kwargs):
         if self.code == "":
             self.code = self.generate_code()
         
         super(Group, self).save(*args, **kwargs)
-
 
     def serialize(self):
         return {
@@ -53,10 +51,8 @@ class GroupMember(models.Model):
     group = models.ForeignKey(Group, models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)
 
-
     def __str__(self):
         return f"{self.group.name} - user: {self.user.username}"
-
 
     def serialize(self):
         return {
@@ -64,6 +60,3 @@ class GroupMember(models.Model):
             "group_code": self.group.code,
             "user": self.user.serialize()
         }
-
-
-class 
