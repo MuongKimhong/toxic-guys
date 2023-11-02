@@ -79,3 +79,17 @@ class GroupMessage(models.Model):
             "text": self.text,
             "created_date": date_format(self.created_date)
         }
+
+
+class GroupMessageImage(models.Model):
+    group_message = models.ForeignKey(GroupMessage, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="group_messages/images/")
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "group_message_id": self.group_message.id,
+            "image": profile_url(self.image),
+            "created_date": date_format(self.created_date)
+        }
