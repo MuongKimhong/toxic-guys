@@ -37,7 +37,7 @@ class Message(models.Model):
             "id": self.id,
             "chatroom_id": self.chatroom.id,
             "sender": self.sender.serialize(),
-            "receiver": self.receiver.seriapythlize(),
+            "receiver": self.receiver.serialize(),
             "text" : self.text,
             "created_date": date_format(self.created_date)
         }
