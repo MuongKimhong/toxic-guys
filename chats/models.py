@@ -11,8 +11,8 @@ itself act like a chatroom
 
 
 class ChatRoom(models.Model):
-    creator = models.ForeignKey(User, related_name="creator", on_delete.models.CASCADE)
-    member = models.ForeignKey(User, related_name="member", on_delete.models.CASCADE)
+    creator = models.ForeignKey(User, related_name="creator", on_delete=models.CASCADE)
+    member = models.ForeignKey(User, related_name="member", on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def serialize(self):
