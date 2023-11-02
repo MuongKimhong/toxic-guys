@@ -5,7 +5,7 @@ from django.conf import settings
 urlpatterns = [
     path("api-users/", include("users.urls")),
     path("api-groups/", include("groups.urls")),
-    path("api-messages/", include("messages.urls")),
+    path("api-chats/", include("chats.urls")),
     path("api-notifications/", include("notifications.urls")),
 ]
 

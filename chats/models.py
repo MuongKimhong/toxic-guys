@@ -26,8 +26,8 @@ class ChatRoom(models.Model):
 
 class Message(models.Model):
     chatroom = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
-    sender = models.ForeignKey(User, related_name="sender", on_delete=models>CASCADE)
-    receiver = models.ForeignKey(User, related_name="receiver", on_delete=models>CASCADE)
+    sender = models.ForeignKey(User, related_name="sender", on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name="receiver", on_delete=models.CASCADE)
     text = models.TextField(blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
 
@@ -36,7 +36,7 @@ class Message(models.Model):
             "id": self.id,
             "chatroom_id": self.chatroom.id,
             "sender": self.sender.serialize(),
-            "receiver": self.receiver.serialize(),
+            "receiver": self.receiver.seriapythlize(),
             "text" : self.text,
             "created_date": date_format(self.created_date)
         }
