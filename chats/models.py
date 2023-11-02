@@ -63,3 +63,19 @@ class GroupChatRoom(models.Model):
             "members": [member.serialize() for member in self.members.all()],
             "created_date": date_format(self.created_date)
         }
+
+
+class GroupMessage(models.Model):
+    group_chatroom = models.ForeignKey(GroupChatRoom, on_delete=models.CASCADE)
+    sender = models.ForeignKey(User, related_name="message_sender", on_delete=models.CASCADE)
+    text = models.TextField(blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "group_chatroom_id": self.group_chatroom.id,
+            "sender": self.sender.serialize(),
+            "text": self.text,
+            "created_date": date_format(self.created_date)
+        }
