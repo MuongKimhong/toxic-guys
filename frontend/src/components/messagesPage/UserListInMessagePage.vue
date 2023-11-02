@@ -5,25 +5,70 @@
     class="navigation-drawer"
   >
     <v-list density="compact" nav>
-      <v-list-item v-for="(i, index) in 12" :key="index" class="user-list pb-1">
-        <v-avatar size="36" color="white"></v-avatar>
-        <span class="white--text ml-2">Richard </span>
-      </v-list-item>
-      <v-list-item class="user-list pb-1">
-        <v-avatar size="36" color="white"></v-avatar>
-        <span class="white--text ml-2">Richard</span>
-      </v-list-item>
-      <v-list-item class="user-list pb-1">
-        <v-avatar size="36" color="white"></v-avatar>
-        <span class="white--text ml-2">Richard </span>
+      <v-list-item
+        v-for="(chatroom, index) in chatrooms"
+        :key="index"
+        class="user-list pb-1"
+      >
+        <div v-if="chatroom.creator.id != $store.state.user.id">
+          <v-avatar
+            v-if="chatroom.creator.profile_url == ''"
+            size="36"
+            color="white"
+          >
+            <v-img :src="require(`../../../public/userimg.png`)"></v-img>
+          </v-avatar>
+          <v-avatar v-else size="36" color="white">
+            <v-img :src="chatroom.creator.profile_url"></v-img>
+          </v-avatar>
+          <span class="white--text ml-2">{{ chatroom.creator.username }}</span>
+        </div>
+        <div v-else-if="chatroom.member.id != $store.state.user.id">
+          <v-avatar
+            v-if="chatroom.creator.profile_url == ''"
+            size="36"
+            color="white"
+          >
+            <v-img :src="require(`../../../public/userimg.png`)"></v-img>
+          </v-avatar>
+          <v-avatar v-else size="36" color="white">
+            <v-img :src="chatroom.creator.profile_url"></v-img>
+          </v-avatar>
+          <span class="white--text ml-2">{{ chatroom.member.username }}</span>
+        </div>
       </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "UserListInMessagePage",
+
+  data: () => ({
+    chatrooms: [],
+  }),
+
+  created() {
+    this.getChatRoomList();
+  },
+
+  methods: {
+    getChatRoomList: function () {
+      axios
+        .get("api-chats/get-chatroom-list/", {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+          },
+        })
+        .then((res) => {
+          this.chatrooms = res.data["chatrooms"];
+          console.log(this.chatrooms);
+        });
+    },
+  },
 };
 </script>
 
