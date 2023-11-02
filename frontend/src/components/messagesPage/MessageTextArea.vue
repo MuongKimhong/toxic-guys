@@ -13,10 +13,10 @@
           ></v-img>
           <v-img v-else :src="message.sender.profile_url"></v-img>
         </v-avatar>
-        <span class="message-text-left">Hey man</span>
+        <span class="message-text-left">{{ message.text }}</span>
       </div>
       <div v-else>
-        <span class="message-text-right"> Yo what's up </span>
+        <span class="message-text-right">{{ message.text }}</span>
       </div>
     </div>
     <div class="text" style=""></div>
