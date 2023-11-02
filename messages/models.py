@@ -17,6 +17,7 @@ class ChatRoom(models.Model):
 
     def serialize(self):
         return {
+            "id": self.id,
             "creator": self.creator.serialize(),
             "member" : self.member.serialize(),
             "created_date": date_format(self.created_date)
@@ -24,7 +25,21 @@ class ChatRoom(models.Model):
 
 
 class Message(models.Model):
-    pass
+    chatroom = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
+    sender = models.ForeignKey(User, related_name="sender", on_delete=models>CASCADE)
+    receiver = models.ForeignKey(User, related_name="receiver", on_delete=models>CASCADE)
+    text = models.TextField(blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "chatroom_id": self.chatroom.id,
+            "sender": self.sender.serialize(),
+            "receiver": self.receiver.serialize(),
+            "text" : self.text,
+            "created_date": date_format(self.created_date)
+        }
 
 
 class MessageImage(models.Model):
