@@ -21,7 +21,7 @@
         <div class="mt-5">
           <v-card class="px-0 py-0 white--text message-card d-flex">
             <v-layout>
-              <UserListInMessagePage />
+              <UserListInMessagePage @chatroomOnClick="chatroomOnClick" />
               <v-card class="d-flex flex-column message-area">
                 <UserDetailNavbar />
                 <MessageTextArea />
@@ -44,14 +44,24 @@ import SendTextArea from "../components/messagesPage/SendTextArea.vue";
 
 export default {
   name: "Messages",
+
   components: {
     UserListInMessagePage,
     UserDetailNavbar,
     MessageTextArea,
     SendTextArea,
   },
+
+  data: () => ({
+    selectedChatRoomId: null,
+  }),
+
   methods: {
     sendMessageIconClick: function () {},
+
+    chatroomOnClick: function (chatroomId) {
+      this.selectedChatRoomId = chatroomId;
+    },
   },
 };
 </script>
