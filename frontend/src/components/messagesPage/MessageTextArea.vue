@@ -4,19 +4,29 @@
     style="background-color: rgb(78, 78, 78); height: 100%"
   >
     <v-spacer></v-spacer>
-    <div class="text my-2">
-      <v-avatar size="28" color="white" style="float: left"></v-avatar>
-      <span class="message-text-left">Hey man</span>
+    <div v-for="(message, index) in messages" :key="index" class="text my-2">
+      <div v-if="message.sender.id != $store.state.user.id">
+        <v-avatar size="28" color="white" style="float: left">
+          <v-img
+            v-if="message.sender.profile_url == ''"
+            :src="require(`../../../public/userimg.png`)"
+          ></v-img>
+          <v-img v-else :src="message.sender.profile_url"></v-img>
+        </v-avatar>
+        <span class="message-text-left">Hey man</span>
+      </div>
+      <div v-else>
+        <span class="message-text-right"> Yo what's up </span>
+      </div>
     </div>
-    <div class="text" style="">
-      <span class="message-text-right"> Yo what's up </span>
-    </div>
+    <div class="text" style=""></div>
   </v-card-text>
 </template>
 
 <script>
 export default {
   name: "MessageTextArea",
+  props: ["messages"],
 };
 </script>
 

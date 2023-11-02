@@ -24,7 +24,7 @@
               <UserListInMessagePage @chatroomOnClick="chatroomOnClick" />
               <v-card class="d-flex flex-column message-area">
                 <UserDetailNavbar />
-                <MessageTextArea />
+                <MessageTextArea :messages="messagesInChatroom" />
                 <v-spacer></v-spacer>
                 <SendTextArea />
               </v-card>
@@ -41,6 +41,7 @@ import UserListInMessagePage from "../components/messagesPage/UserListInMessageP
 import UserDetailNavbar from "../components/messagesPage/UserDetailNavbar.vue";
 import MessageTextArea from "../components/messagesPage/MessageTextArea.vue";
 import SendTextArea from "../components/messagesPage/SendTextArea.vue";
+import axios from "axios";
 
 export default {
   name: "Messages",
@@ -54,6 +55,8 @@ export default {
 
   data: () => ({
     selectedChatRoomId: null,
+
+    messagesInChatroom: [],
   }),
 
   methods: {
@@ -61,6 +64,22 @@ export default {
 
     chatroomOnClick: function (chatroomId) {
       this.selectedChatRoomId = chatroomId;
+      this.getMessagesInChatroom(chatroomId);
+    },
+
+    getMessagesInChatroom: function (chatroomId) {
+      axios
+        .get("api-chats/get-messages-in-chatroom/", {
+          params: {
+            chatroom_id: chatroomId,
+          },
+          headers: {
+            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+          },
+        })
+        .then((res) => {
+          this.messagesInChatroom = res.data["messages"];
+        });
     },
   },
 };
