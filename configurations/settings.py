@@ -27,9 +27,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'chats',
     'users',
     'groups',
-    'messages',
     'notifications',
     
     'rest_framework_simplejwt',
