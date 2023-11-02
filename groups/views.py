@@ -6,6 +6,7 @@ from rest_framework import parsers
 
 
 from groups.models import Group
+from chats.models import GroupChatRoom
 from users.models import User
 from users.utils import token_verification
 
@@ -39,4 +40,9 @@ class CreateGroup(APIView):
             group.profile = request.data["group_profile"]
         
         group.save()
+
+        # when group is created, create an empty group chatroom 
+        group_chatroom = GroupChatRoom.objects.create(group=group)
+        group_chatroom.members.add(user)
         return Response({"group_created": True}, status=200)
+
