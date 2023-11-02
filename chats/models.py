@@ -21,6 +21,7 @@ class ChatRoom(models.Model):
             "creator": self.creator.serialize(),
             "member" : self.member.serialize(),
             "created_date": date_format(self.created_date)
+            "total_messages": Message.objects.filter(chatroom__id=self.id).count()
         }
 
 
