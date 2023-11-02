@@ -9,7 +9,7 @@
         v-for="(chatroom, index) in chatrooms"
         :key="index"
         class="user-list pb-1"
-        @click="chatroomOnClick(chatroom.id)"
+        @click="chatroomOnClick(chatroom)"
       >
         <div v-if="chatroom.creator.id != $store.state.user.id">
           <v-avatar
@@ -67,14 +67,14 @@ export default {
         .then((res) => {
           this.chatrooms = res.data["chatrooms"];
           if (this.chatrooms.length > 0) {
-            this.$emit("chatroomOnClick", this.chatrooms[0].id);
+            this.$emit("chatroomOnClick", this.chatrooms[0]);
           }
           console.log(this.chatrooms);
         });
     },
 
-    chatroomOnClick: function (chatroomId) {
-      this.$emit("chatroomOnClick", chatroomId);
+    chatroomOnClick: function (chatroomObject) {
+      this.$emit("chatroomOnClick", chatroomObject);
     },
   },
 };

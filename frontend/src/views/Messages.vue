@@ -26,7 +26,27 @@
                 <UserDetailNavbar />
                 <MessageTextArea :messages="messagesInChatroom" />
                 <v-spacer></v-spacer>
-                <SendTextArea />
+
+                <v-card-actions style="background-color: rgb(78, 78, 78)">
+                  <span class="mr-2">
+                    <i
+                      class="fas fa-images white--text"
+                      id="images-icon"
+                      style="font-size: 20px"
+                    ></i>
+                  </span>
+                  <v-text-field
+                    rounded
+                    outlined
+                    dense
+                    label="Write message here"
+                    dark
+                    hide-details
+                    v-model="messageText"
+                    append-icon="mdi-arrow-up"
+                    @click:append="sendMessage()"
+                  ></v-text-field>
+                </v-card-actions>
               </v-card>
             </v-layout>
           </v-card>
@@ -40,7 +60,6 @@
 import UserListInMessagePage from "../components/messagesPage/UserListInMessagePage.vue";
 import UserDetailNavbar from "../components/messagesPage/UserDetailNavbar.vue";
 import MessageTextArea from "../components/messagesPage/MessageTextArea.vue";
-import SendTextArea from "../components/messagesPage/SendTextArea.vue";
 import axios from "axios";
 
 export default {
@@ -50,28 +69,38 @@ export default {
     UserListInMessagePage,
     UserDetailNavbar,
     MessageTextArea,
-    SendTextArea,
   },
 
   data: () => ({
-    selectedChatRoomId: null,
+    selectedChatRoom: null,
 
     messagesInChatroom: [],
+    messageText: "",
   }),
+
+  created() {
+    document.addEventListener("keyup", (event) => {
+      if (event.key == "Enter") {
+        if (this.messageText.trim() != "") {
+          this.sendMessage();
+        }
+      }
+    });
+  },
 
   methods: {
     sendMessageIconClick: function () {},
 
-    chatroomOnClick: function (chatroomId) {
-      this.selectedChatRoomId = chatroomId;
-      this.getMessagesInChatroom(chatroomId);
+    chatroomOnClick: function (chatroomObject) {
+      this.selectedChatRoom = chatroomObject;
+      this.getMessagesInChatroom(chatroomObject);
     },
 
-    getMessagesInChatroom: function (chatroomId) {
+    getMessagesInChatroom: function (chatroomObject) {
       axios
         .get("api-chats/get-messages-in-chatroom/", {
           params: {
-            chatroom_id: chatroomId,
+            chatroom_id: chatroomObject.id,
           },
           headers: {
             Authorization: `Bearer ${this.$store.state.user.accessToken}`,
@@ -79,6 +108,37 @@ export default {
         })
         .then((res) => {
           this.messagesInChatroom = res.data["messages"];
+        });
+    },
+
+    sendMessage: function () {
+      if (this.messageText.trim() === "") return;
+
+      var receiverId = null;
+
+      if (this.selectedChatRoom.creator.id == this.$store.state.user.id) {
+        receiverId = this.selectedChatRoom.member.id;
+      } else {
+        receiverId = this.selectedChatRoom.creator.id;
+      }
+
+      axios
+        .post(
+          "api-chats/send-message/",
+          {
+            chatroom_id: this.selectedChatRoom.id,
+            text: this.messageText,
+            receiver_id: receiverId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          this.messageText = "";
+          console.log(res.data["message"]);
         });
     },
   },
@@ -96,5 +156,8 @@ export default {
   width: 100%;
   border-radius: 0;
   padding: 5px;
+}
+#images-icon {
+  cursor: pointer;
 }
 </style>

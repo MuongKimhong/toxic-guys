@@ -5,6 +5,7 @@ from rest_framework import parsers
 from django.db.models import Q
 
 from users.utils import token_verification
+from users.models import User
 from chats.models import ChatRoom, Message, MessageImage
 from groups.models import Group
 
