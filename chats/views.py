@@ -29,7 +29,7 @@ class GetMessagesInChatRoom(APIView):
         except ChatRoom.DoesNotExist:
             return Response({"no_chatroom": True}, status=400)
         
-        messages = Message.objects.filter(chatroom__id=chatroom.id).order_by("-id")
+        messages = Message.objects.filter(chatroom__id=chatroom.id)
         messages = [message.serialize() for message in messages]
 
         return Response({"messages": messages}, status=200)

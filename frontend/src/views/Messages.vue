@@ -23,7 +23,7 @@
             <v-layout>
               <UserListInMessagePage @chatroomOnClick="chatroomOnClick" />
               <v-card class="d-flex flex-column message-area">
-                <UserDetailNavbar />
+                <UserDetailNavbar :chatroom="selectedChatRoom" />
                 <MessageTextArea :messages="messagesInChatroom" />
                 <v-spacer></v-spacer>
 

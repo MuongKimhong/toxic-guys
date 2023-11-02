@@ -4,7 +4,7 @@
     style="background-color: rgb(78, 78, 78); height: 100%"
   >
     <v-spacer></v-spacer>
-    <div v-for="(message, index) in messages" :key="index" class="text my-2">
+    <div v-for="(message, index) in messages" :key="index" class="text my-1">
       <div v-if="message.sender.id != $store.state.user.id">
         <v-avatar size="28" color="white" style="float: left">
           <v-img
