@@ -1,6 +1,6 @@
 from django.db import models
 
-from users.models import User, date_format
+from users.models import User, date_format, profile_url
 
 '''
 ChatRoom is for 2 users chatting together.
@@ -43,4 +43,14 @@ class Message(models.Model):
 
 
 class MessageImage(models.Model):
-    pass
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="message_images/")
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "message_id": self.message.id,
+            "image": profile_url(self.image),
+            "created_date": date_format(self.created_date)
+        }
