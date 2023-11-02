@@ -32,3 +32,26 @@ class GetMessagesInChatRoom(APIView):
         messages = [message.serialize() for message in messages]
 
         return Response({"messages": messages}, status=200)
+
+
+class SendMessage(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        try:
+            sender = User.objects.get(id=token_verification(request))
+        except User.DoesNotExist:
+            return Response({"sender_err": True}, status=400)
+        
+        try:
+            chatroom = ChatRoom.objects.get(id=request.data["chatroom_id"])
+        except ChatRoom.DoesNotExist:
+            return Response({"chatroom_err": True}, status=400)
+
+        message = Message.objects.create(
+            chatroom=chatroom,
+            sender=sender,
+            receiver_id=request.data["receiver_id"],
+            text=request.data["text"]
+        )
+        return Response({"message": message.serialize()}, status=200)
