@@ -2,7 +2,7 @@
   <v-container>
     <v-row align="center" justify-content="center">
       <v-col cols="8" class="mr-auto ml-auto">
-        <div>
+        <div class="mt-10">
           <div class="text-center">
             <v-avatar size="120" color="white" class="ml-auto mr-auto">
               <v-img
@@ -41,8 +41,9 @@
               dense
               outlined
               rounded
-              counter="30"
+              counter="20"
               v-model="groupName"
+              :error-messages="err.name"
             ></v-text-field>
 
             <v-select
@@ -54,13 +55,29 @@
               outlined
               rounded
               v-model="groupType"
-              @change="groupTypeOnChange()"
+              :error-messages="err.type"
             ></v-select>
 
-            <SearchUserInCreateNewGroup
-              :showSearchUsers="showSearchUsers"
-              :groupType="groupType"
-            />
+            <v-textarea
+              rounded
+              outlined
+              dark
+              label="Description"
+              v-model="groupDescription"
+              counter="100"
+              :error-messages="err.description"
+            ></v-textarea>
+          </div>
+
+          <div class="text-center mt-6">
+            <v-btn
+              class="text-capitalize white--text"
+              dark
+              small
+              @click="createGroup()"
+            >
+              Create Group
+            </v-btn>
           </div>
         </div>
       </v-col>
@@ -71,30 +88,21 @@
 <script>
 import axios from "axios";
 
-import SearchUserInCreateNewGroup from "../components/SearchUserInCreateNewGroup.vue";
-
 export default {
   name: "CreateNewGroup",
-
-  components: {
-    SearchUserInCreateNewGroup,
-  },
 
   data: () => ({
     groupImage: null,
     groupImageURL: null,
     groupName: "",
     groupType: "",
+    groupDescription: "",
 
-    connections: [], //friend
-    randomUsers: [],
-
-    currentPage: 1,
-    totalPages: 0,
-
-    showSearchUsers: false,
-    showConnections: true,
-    showRandomUsers: false,
+    err: {
+      name: "",
+      type: "",
+      description: "",
+    },
   }),
 
   methods: {
@@ -112,46 +120,38 @@ export default {
       input.click();
     },
 
-    groupTypeOnChange: function () {
-      if (this.groupType === "Private" || this.groupType === "Public") {
-        this.showSearchUsers = true;
-      } else {
-        this.showSearchUsers = false;
+    createGroup: function () {
+      this.err = { name: "", type: "", description: "" };
+
+      if (this.groupName.trim() === "") {
+        this.err.name = "Please enter group name";
+        return;
+      } else if (this.groupName.length > 20) {
+        this.err.name = "Name exceeds word limit";
+        return;
+      } else if (this.groupType.trim() === "") {
+        this.err.type = "Please choose group type";
+        return;
+      } else if (this.groupDescription.length > 100) {
+        this.err.type = "Description exceeds word limit";
+        return;
       }
-    },
 
-    // get all friends
-    getAllConnections: function () {
-      if (this.connections.length > 0) return;
+      var formData = new FormData();
+      formData.append("group_name", this.groupName);
+      formData.append("group_type", this.groupType);
+      formData.append("group_description", this.groupDescription);
+      formData.append("group_profile", this.groupImage);
 
       axios
-        .get("api-users/get-all-connections/", {
+        .post("api-groups/create-group/", formData, {
           headers: {
+            "content-type": "multipart/form-data",
             Authorization: `Bearer ${this.$store.state.user.accessToken}`,
           },
         })
         .then((res) => {
-          if (res.data["connections"]) {
-            this.connections = res.data["connections"];
-          }
-        });
-    },
-
-    getRandomUsers: function () {
-      axios
-        .get("api-users/get-random-users/", {
-          params: {
-            page: this.currentPage,
-          },
-          headers: {
-            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
-          },
-        })
-        .then((res) => {
-          if (res.data["random_users"]) {
-            this.randomUsers = res.data["random_users"];
-            this.totalPages = res.data["total_pages"];
-          }
+          console.log(res.data);
         });
     },
   },

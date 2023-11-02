@@ -1,6 +1,5 @@
 <template>
   <v-card
-    v-if="showSearchUsers === true"
     style="background-color: rgb(75, 75, 75)"
     class="px-5 py-6"
     elevation="8"
