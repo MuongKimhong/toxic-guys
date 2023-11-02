@@ -1,13 +1,7 @@
 from django.db import models
 
 from users.models import User, date_format, profile_url
-
-'''
-ChatRoom is for 2 users chatting together.
-
-Group does not need chatroom, because group
-itself act like a chatroom
-'''
+from groups.models import Group
 
 
 class ChatRoom(models.Model):
@@ -53,5 +47,19 @@ class MessageImage(models.Model):
             "id": self.id,
             "message_id": self.message.id,
             "image": profile_url(self.image),
+            "created_date": date_format(self.created_date)
+        }
+
+
+class GroupChatRoom(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    members = models.ManyToManyField(User, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "group": self.group.serialize(),
+            "members": [member.serialize() for member in self.members.all()],
             "created_date": date_format(self.created_date)
         }
