@@ -115,6 +115,8 @@ export default {
     groupTypeOnChange: function () {
       if (this.groupType === "Private" || this.groupType === "Public") {
         this.showSearchUsers = true;
+      } else {
+        this.showSearchUsers = false;
       }
     },
 
