@@ -151,7 +151,9 @@ export default {
           },
         })
         .then((res) => {
-          console.log(res.data);
+          if (res.data["group_created"]) {
+            this.$router.push({ name: "Messages" }).catch(() => {});
+          }
         });
     },
   },
