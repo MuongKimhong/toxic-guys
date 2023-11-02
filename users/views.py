@@ -15,6 +15,7 @@ from users.models import *
 from users.utils import token_verification, check_connection_status
 from notifications.models import *
 from notifications.views import send_notification
+from chats.models import ChatRoom
 
 
 TWENTY_MINUTES_IN_SECONDS = 20 * 60
@@ -384,6 +385,13 @@ class AcceptOrRejectConnectionRequest(APIView):
         except Notification.DoesNotExist: 
             return None
 
+    # when 2 users connected with each other, create a new chatroom for them    
+    def create_chatroom(self, request):
+        chatroom = ChatRoom.objects.create(
+            creator_id=token_verification(request),
+            member_id=request.data["request_sender_id"]
+        )
+        
     # resposne to connection request
     def check_response_status(self, user_connection, request):
         if request.data["response"] == "accept":
@@ -403,10 +411,15 @@ class AcceptOrRejectConnectionRequest(APIView):
                 _type="connection-accept"
             )
             self.delete_notification(request) # delete connection request notification
+
+            self.create_chatroom(request)
+
             return Response({"accepted": True}, status=200)
         elif request.data["response"] == "reject":
             user_connection.delete()
+
             self.delete_notification(request)
+
             return Response({"rejected": True}, status=200)
         else:
             return Response({"error": True}, status=400)
