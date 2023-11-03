@@ -28,32 +28,29 @@ class GetChatRoomList(APIView):
 
 class GetMessagesInChatRoom(APIView):
     permission_classes = [ IsAuthenticated ]
+    chatroom_model = ChatRoom
+    chatroom_type = "user"
+    param_keyword = "chatroom_id"
 
     def get(self, request):
         try:
-            chatroom = ChatRoom.objects.get(id=request.query_params["chatroom_id"])
-        except ChatRoom.DoesNotExist:
+            chatroom = self.chatroom_model.objects.get(id=request.query_params[f"{self.param_keyword}"])
+        except self.chatroom_model.DoesNotExist:
             return Response({"no_chatroom": True}, status=400)
         
-        messages = Message.objects.filter(chatroom__id=chatroom.id)
-        messages = [message.serialize() for message in messages]
+        if self.chatroom_type == "user":
+            messages = Message.objects.filter(chatroom__id=chatroom.id)
+        elif self.chatroom_type == "group":
+            messages = GroupMessage.objects.filter(group_chatroom__id=chatroom.id)
 
+        messages = [message.serialize() for message in messages]
         return Response({"messages": messages}, status=200)
 
 
-class GetMessageInGroupChatRoom(APIView):
-    permission_classes = [ IsAuthenticated ]
-
-    def get(self, request):
-        try:
-            group_chatroom = GroupChatRoom.objects.get(id=request.query_params["group_chatroom_id"])
-        except GroupChatRoom.DoesNotExist:
-            return Response({"no_chatroom": True}, status=400)
-        
-        messages = GroupMessage.objects.filter(group_chatroom__id=group_chatroom.id)
-        messages = [message.serialize() for message in messages]
-
-        return Response({"messages": messages}, status=200)
+class GetMessageInGroupChatRoom(GetMessagesInChatRoom):
+    chatroom_model = GroupChatRoom
+    chatroom_type  = "group"
+    param_keyword  = "group_chatroom_id"
 
 
 class SendMessage(APIView):
