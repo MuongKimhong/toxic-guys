@@ -15,6 +15,9 @@ from groups.models import Group
 class GetChatRoomList(APIView):
     permission_classes = [ IsAuthenticated ]
 
+    '''
+    chatroom that has the latest last_message_created_date will be the first
+    '''
     def sort_chatrooms(self, combined_chatrooms_q):
         sorted_chatrooms = sorted(
             combined_chatrooms_q, key=lambda instance: instance.last_message_created_date
