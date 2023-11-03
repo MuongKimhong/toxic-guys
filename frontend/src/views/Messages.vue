@@ -127,6 +127,14 @@ export default {
     },
 
     sendMessage: function () {
+      if (this.selectedChatRoom.type === "user") {
+        this.sendMessageForChatRoom();
+      } else if (this.selectedChatRoom.type === "group") {
+        this.sendMessageForGroupChatRoom();
+      }
+    },
+
+    sendMessageForChatRoom: function () {
       if (this.messageText.trim() === "") return;
 
       var receiverId = null;
@@ -144,6 +152,28 @@ export default {
             chatroom_id: this.selectedChatRoom.id,
             text: this.messageText,
             receiver_id: receiverId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          }
+        )
+        .then((res) => {
+          this.messageText = "";
+          console.log(res.data["message"]);
+        });
+    },
+
+    sendMessageForGroupChatRoom: function () {
+      if (this.messageText.trim() === "") return;
+
+      axios
+        .post(
+          "api-chats/send-message-for-group-chatroom/",
+          {
+            chatroom_id: this.selectedChatRoom.id,
+            text: this.messageText,
           },
           {
             headers: {

@@ -78,7 +78,7 @@ class SendMessage(APIView):
             )
         elif self.chatroom_type == "group":
             message = GroupMessage.objects.create(
-                group_chatroom=group_chatroom,
+                group_chatroom=chatroom,
                 sender=sender,
                 text=request.data["text"]
             )
