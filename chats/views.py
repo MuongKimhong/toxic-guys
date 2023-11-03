@@ -7,6 +7,7 @@ from django.db.models import Q
 from users.utils import token_verification
 from users.models import User
 from chats.models import ChatRoom, Message, MessageImage
+from chats.models import GroupChatRoom, GroupMessage, GroupMessageImage
 from groups.models import Group
 
 
@@ -17,6 +18,11 @@ class GetChatRoomList(APIView):
         user_id = token_verification(request)
         chatrooms = ChatRoom.objects.filter(Q(creator__id=user_id) | Q(member__id=user_id))
         chatrooms = [chatroom.serialize() for chatroom in chatrooms]
+
+        group_chatrooms = GroupChatRoom.objects.filter(members=user_id)
+        group_chatrooms = [chatroom.serialize() for chatroom in group_chatrooms]
+
+        chatrooms = chatrooms + group_chatrooms
         return Response({"chatrooms": chatrooms}, status=200) 
 
 

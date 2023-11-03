@@ -11,31 +11,49 @@
         class="user-list pb-1"
         @click="chatroomOnClick(chatroom)"
       >
-        <div v-if="chatroom.creator.id != $store.state.user.id">
-          <v-avatar
-            v-if="chatroom.creator.profile_url == ''"
-            size="36"
-            color="white"
-          >
-            <v-img :src="require(`../../../public/userimg.png`)"></v-img>
-          </v-avatar>
-          <v-avatar v-else size="36" color="white">
-            <v-img :src="chatroom.creator.profile_url"></v-img>
-          </v-avatar>
-          <span class="white--text ml-2">{{ chatroom.creator.username }}</span>
+        <div v-if="chatroom.type == 'user'">
+          <div v-if="chatroom.creator.id != $store.state.user.id">
+            <v-avatar
+              v-if="chatroom.creator.profile_url == ''"
+              size="36"
+              color="white"
+            >
+              <v-img :src="require(`../../../public/userimg.png`)"></v-img>
+            </v-avatar>
+            <v-avatar v-else size="36" color="white">
+              <v-img :src="chatroom.creator.profile_url"></v-img>
+            </v-avatar>
+            <span class="white--text ml-2">
+              {{ chatroom.creator.username }}
+            </span>
+          </div>
+          <div v-else-if="chatroom.member.id != $store.state.user.id">
+            <v-avatar
+              v-if="chatroom.creator.profile_url == ''"
+              size="36"
+              color="white"
+            >
+              <v-img :src="require(`../../../public/userimg.png`)"></v-img>
+            </v-avatar>
+            <v-avatar v-else size="36" color="white">
+              <v-img :src="chatroom.creator.profile_url"></v-img>
+            </v-avatar>
+            <span class="white--text ml-2">{{ chatroom.member.username }}</span>
+          </div>
         </div>
-        <div v-else-if="chatroom.member.id != $store.state.user.id">
-          <v-avatar
-            v-if="chatroom.creator.profile_url == ''"
-            size="36"
-            color="white"
-          >
-            <v-img :src="require(`../../../public/userimg.png`)"></v-img>
-          </v-avatar>
-          <v-avatar v-else size="36" color="white">
-            <v-img :src="chatroom.creator.profile_url"></v-img>
-          </v-avatar>
-          <span class="white--text ml-2">{{ chatroom.member.username }}</span>
+        <div v-if="chatroom.type == 'group'">
+          <div>
+            <v-avatar size="36" color="white">
+              <v-img
+                v-if="chatroom.group.profile == ''"
+                :src="require(`../../../public/groupimg.png`)"
+              ></v-img>
+              <v-img v-else :src="chatroom.group.profile"></v-img>
+            </v-avatar>
+            <span class="white--text ml-2">
+              {{ chatroom.group.name }}
+            </span>
+          </div>
         </div>
       </v-list-item>
     </v-list>

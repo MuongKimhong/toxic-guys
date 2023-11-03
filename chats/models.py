@@ -15,7 +15,8 @@ class ChatRoom(models.Model):
             "creator": self.creator.serialize(),
             "member" : self.member.serialize(),
             "created_date": date_format(self.created_date),
-            "total_messages": Message.objects.filter(chatroom__id=self.id).count()
+            "total_messages": Message.objects.filter(chatroom__id=self.id).count(),
+            "type": "user"
         }
 
 
@@ -61,7 +62,8 @@ class GroupChatRoom(models.Model):
             "id": self.id,
             "group": self.group.serialize(),
             "members": [member.serialize() for member in self.members.all()],
-            "created_date": date_format(self.created_date)
+            "created_date": date_format(self.created_date),
+            "type": "group"
         }
 
 
