@@ -97,18 +97,33 @@ export default {
     },
 
     getMessagesInChatroom: function (chatroomObject) {
-      axios
-        .get("api-chats/get-messages-in-chatroom/", {
-          params: {
-            chatroom_id: chatroomObject.id,
-          },
-          headers: {
-            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
-          },
-        })
-        .then((res) => {
-          this.messagesInChatroom = res.data["messages"];
-        });
+      if (chatroomObject.type === "user") {
+        axios
+          .get("api-chats/get-messages-in-chatroom/", {
+            params: {
+              chatroom_id: chatroomObject.id,
+            },
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          })
+          .then((res) => {
+            this.messagesInChatroom = res.data["messages"];
+          });
+      } else if (chatroomObject.type === "group") {
+        axios
+          .get("api-chats/get-messages-in-group-chatroom/", {
+            params: {
+              group_chatroom_id: chatroomObject.id,
+            },
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          })
+          .then((res) => {
+            this.messagesInChatroom = res.data["messages"];
+          });
+      }
     },
 
     sendMessage: function () {

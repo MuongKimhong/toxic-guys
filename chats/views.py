@@ -41,6 +41,21 @@ class GetMessagesInChatRoom(APIView):
         return Response({"messages": messages}, status=200)
 
 
+class GetMessageInGroupChatRoom(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def get(self, request):
+        try:
+            group_chatroom = GroupChatRoom.objects.get(id=request.query_params["group_chatroom_id"])
+        except GroupChatRoom.DoesNotExist:
+            return Response({"no_chatroom": True}, status=400)
+        
+        messages = GroupMessage.objects.filter(group_chatroom__id=group_chatroom.id)
+        messages = [message.serialize() for message in messages]
+
+        return Response({"messages": messages}, status=200)
+
+
 class SendMessage(APIView):
     permission_classes = [ IsAuthenticated ]
 
