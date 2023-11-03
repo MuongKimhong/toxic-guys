@@ -29,10 +29,7 @@ class GetChatRoomList(APIView):
     def get(self, request):
         user_id = token_verification(request)
         chatrooms_q = ChatRoom.objects.filter(Q(creator__id=user_id) | Q(member__id=user_id))
-        chatrooms = [chatroom.serialize() for chatroom in chatrooms_q]
-
         group_chatrooms_q = GroupChatRoom.objects.filter(members=user_id).distinct()
-        group_chatrooms = [chatroom.serialize() for chatroom in group_chatrooms_q]
 
         combined_chatrooms_q = chain(chatrooms_q, group_chatrooms_q)
         sorted_chatrooms = self.sort_chatrooms(combined_chatrooms_q)
