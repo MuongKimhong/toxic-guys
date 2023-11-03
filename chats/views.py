@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import parsers
 from django.db.models import Q
+from itertools import chain
 
 from users.utils import token_verification
 from users.models import User
@@ -14,16 +15,26 @@ from groups.models import Group
 class GetChatRoomList(APIView):
     permission_classes = [ IsAuthenticated ]
 
+    def sort_chatrooms(self, combined_chatrooms_q):
+        sorted_chatrooms = sorted(
+            combined_chatrooms_q, key=lambda instance: instance.last_message_created_date
+        )
+        sorted_chatrooms.reverse()
+        sorted_chatrooms = [room.serialize() for room in sorted_chatrooms]
+        return sorted_chatrooms
+
     def get(self, request):
         user_id = token_verification(request)
-        chatrooms = ChatRoom.objects.filter(Q(creator__id=user_id) | Q(member__id=user_id))
-        chatrooms = [chatroom.serialize() for chatroom in chatrooms]
+        chatrooms_q = ChatRoom.objects.filter(Q(creator__id=user_id) | Q(member__id=user_id))
+        chatrooms = [chatroom.serialize() for chatroom in chatrooms_q]
 
-        group_chatrooms = GroupChatRoom.objects.filter(members=user_id)
-        group_chatrooms = [chatroom.serialize() for chatroom in group_chatrooms]
+        group_chatrooms_q = GroupChatRoom.objects.filter(members=user_id).distinct()
+        group_chatrooms = [chatroom.serialize() for chatroom in group_chatrooms_q]
 
-        chatrooms = chatrooms + group_chatrooms
-        return Response({"chatrooms": chatrooms}, status=200) 
+        combined_chatrooms_q = chain(chatrooms_q, group_chatrooms_q)
+        sorted_chatrooms = self.sort_chatrooms(combined_chatrooms_q)
+
+        return Response({"chatrooms": sorted_chatrooms}, status=200) 
 
 
 class GetMessagesInChatRoom(APIView):
@@ -82,6 +93,8 @@ class SendMessage(APIView):
                 sender=sender,
                 text=request.data["text"]
             )
+        chatroom.last_message_created_date = message.created_date
+        chatroom.save()
         return Response({"message": message.serialize()}, status=200)
 
 

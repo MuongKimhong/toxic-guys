@@ -11,7 +11,7 @@ def create_dummy_users():
         dummy_user = User.objects.create(
             username=f"user{i}",
             email=f"user{i}@gmail.com",
-            password=make_password("Testing123")
+            password="Testing123"
         )
     
     print(f"Finished created {users_to_create} dummy users")

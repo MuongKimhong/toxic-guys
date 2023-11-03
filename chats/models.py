@@ -9,6 +9,7 @@ class ChatRoom(models.Model):
     member = models.ForeignKey(User, related_name="member", on_delete=models.CASCADE)
     created_date = models.DateTimeField(auto_now_add=True)
     _type = models.CharField(max_length=10, default="user")
+    last_message_created_date = models.DateTimeField(blank=True, null=True) # use to sort chatroom in GetChatRoomList API
 
     def serialize(self):
         return {
@@ -58,6 +59,7 @@ class GroupChatRoom(models.Model):
     members = models.ManyToManyField(User, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     _type = models.CharField(max_length=10, default="group")
+    last_message_created_date = models.DateTimeField(blank=True, null=True) # use to sort chatroom in GetChatRoomList API
 
     def serialize(self):
         return {
