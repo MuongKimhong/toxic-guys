@@ -21,7 +21,10 @@
         <div class="mt-5">
           <v-card class="px-0 py-0 white--text message-card d-flex">
             <v-layout>
-              <UserListInMessagePage @chatroomOnClick="chatroomOnClick" />
+              <UserListInMessagePage
+                @chatroomOnClick="chatroomOnClick"
+                :chatrooms="chatrooms"
+              />
               <v-card class="d-flex flex-column message-area">
                 <UserDetailNavbar :chatroom="selectedChatRoom" />
                 <MessageTextArea :messages="messagesInChatroom" />
@@ -72,6 +75,7 @@ export default {
   },
 
   data: () => ({
+    chatrooms: [],
     selectedChatRoom: null,
 
     messagesInChatroom: [],
@@ -86,6 +90,8 @@ export default {
         }
       }
     });
+
+    this.getChatRoomList();
   },
 
   methods: {
@@ -161,7 +167,8 @@ export default {
         )
         .then((res) => {
           this.messageText = "";
-          console.log(res.data["message"]);
+          this.messagesInChatroom.push(res.data["message"]);
+          this.getChatRoomList();
         });
     },
 
@@ -183,7 +190,24 @@ export default {
         )
         .then((res) => {
           this.messageText = "";
-          console.log(res.data["message"]);
+          this.messagesInChatroom.push(res.data["message"]);
+          this.getChatRoomList();
+        });
+    },
+
+    getChatRoomList: function () {
+      axios
+        .get("api-chats/get-chatroom-list/", {
+          headers: {
+            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+          },
+        })
+        .then((res) => {
+          this.chatrooms = res.data["chatrooms"];
+          if (this.chatrooms.length > 0) {
+            this.selectedChatRoom = this.chatrooms[0];
+            this.getMessagesInChatroom(this.selectedChatRoom);
+          }
         });
     },
   },

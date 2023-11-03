@@ -61,36 +61,12 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   name: "UserListInMessagePage",
 
-  data: () => ({
-    chatrooms: [],
-  }),
-
-  created() {
-    this.getChatRoomList();
-  },
+  props: ["chatrooms"],
 
   methods: {
-    getChatRoomList: function () {
-      axios
-        .get("api-chats/get-chatroom-list/", {
-          headers: {
-            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
-          },
-        })
-        .then((res) => {
-          this.chatrooms = res.data["chatrooms"];
-          if (this.chatrooms.length > 0) {
-            this.$emit("chatroomOnClick", this.chatrooms[0]);
-          }
-          console.log(this.chatrooms);
-        });
-    },
-
     chatroomOnClick: function (chatroomObject) {
       this.$emit("chatroomOnClick", chatroomObject);
     },

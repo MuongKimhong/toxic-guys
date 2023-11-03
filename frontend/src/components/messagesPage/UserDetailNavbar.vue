@@ -1,6 +1,7 @@
 <template>
   <v-card-title
     style="background-color: rgb(95, 95, 95); border-radius: 10px; padding: 5px"
+    v-if="chatroom"
   >
     <span v-if="chatroom.type == 'user'">
       <v-avatar
