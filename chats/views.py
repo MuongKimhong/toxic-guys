@@ -55,6 +55,8 @@ class GetMessageInGroupChatRoom(GetMessagesInChatRoom):
 
 class SendMessage(APIView):
     permission_classes = [ IsAuthenticated ]
+    chatroom_model = ChatRoom
+    chatroom_type  = "user"
 
     def post(self, request):
         try:
@@ -63,14 +65,26 @@ class SendMessage(APIView):
             return Response({"sender_err": True}, status=400)
         
         try:
-            chatroom = ChatRoom.objects.get(id=request.data["chatroom_id"])
-        except ChatRoom.DoesNotExist:
+            chatroom = self.chatroom_model.objects.get(id=request.data["chatroom_id"])
+        except self.chatroom_model.DoesNotExist:
             return Response({"chatroom_err": True}, status=400)
 
-        message = Message.objects.create(
-            chatroom=chatroom,
-            sender=sender,
-            receiver_id=request.data["receiver_id"],
-            text=request.data["text"]
-        )
+        if self.chatroom_type == "user":
+            message = Message.objects.create(
+                chatroom=chatroom,
+                sender=sender,
+                receiver_id=request.data["receiver_id"],
+                text=request.data["text"]
+            )
+        elif self.chatroom_type == "group":
+            message = GroupMessage.objects.create(
+                group_chatroom=group_chatroom,
+                sender=sender,
+                text=request.data["text"]
+            )
         return Response({"message": message.serialize()}, status=200)
+
+
+class SendMessageForGroupChatRoom(SendMessage):
+    chatroom_model = GroupChatRoom
+    chatroom_type  = "group"
