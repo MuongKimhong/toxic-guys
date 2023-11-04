@@ -7,6 +7,7 @@ import jwt
 TWENTY_MINUTES_IN_SECONDS = 20 * 60
 
 
+# verify token to extract user id
 def token_verification(request):
     token = str(request.META.get("HTTP_AUTHORIZATION"))[7:]
     decoded = jwt.decode(token, options={"verify_signature": False})
