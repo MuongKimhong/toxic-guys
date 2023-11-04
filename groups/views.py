@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework import parsers
 
 
-from groups.models import Group
+from groups.models import Group, GroupInvitation, GroupMember
 from chats.models import GroupChatRoom
 from users.models import User
 from users.utils import token_verification
@@ -46,3 +46,20 @@ class CreateGroup(APIView):
         group_chatroom.members.add(user)
         return Response({"group_created": True}, status=200)
 
+
+class InviteUserToJoinGroup(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        try:
+            group = Group.objects.get(id=request.data["group"])
+        except Group.DoesNotExist:
+            return Response({"group_err": True}, status=400)
+        
+        try:
+            user = User.objects.get(id=request.data["user_to_be_invited"])
+        except User.DoesNotExist:
+            return Response({"user_err": True}, status=400)
+
+        group_invitation = GroupInvitation.objects.get_or_create(group=group, user=user, inviter_id=token_verification(request))
+        return Response({"invitation_sent": group_invitation.serialize()}, status=200)
