@@ -62,7 +62,9 @@ class InviteUserToJoinGroup(APIView):
         except User.DoesNotExist:
             return Response({"user_err": True}, status=400)
 
-        group_invitation = GroupInvitation.objects.get_or_create(group=group, user=user, inviter_id=token_verification(request))
+        group_invitation, created = GroupInvitation.objects.get_or_create(
+            group=group, user=user, inviter_id=token_verification(request)
+        )
 
         notification_sender = User.objects.get(id=token_verification(request))
 
@@ -86,7 +88,7 @@ class AcceptGroupInvitation(APIView):
             return Response({"group_inv_err": True}, status=400)
 
         if self.status == "accept": 
-            group_member = GroupMember.objects.get_or_create(
+            group_member, created = GroupMember.objects.get_or_create(
                 group=group_inv.group,
                 user=group_inv.user
             )
@@ -102,3 +104,23 @@ class AcceptGroupInvitation(APIView):
 
 class DeleteGroupInvitation(AcceptGroupInvitation):
     status = "delete"
+
+
+class JoinGroupWithCode(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        try:
+            group = Group.objects.get(code=request.data["code"])
+        except Group.DoesNotExist:
+            return Response({"group_err": True}, status=400)
+
+        user = User.objects.get(id=token_verification(request)) 
+        group_member, created = GroupMember.objects.get_or_create(group=group, user=user)
+
+        group_chatroom = GroupChatRoom.objects.get(group__id=group.id)
+
+        if user not in group_chatroom.members.all():
+            group_chatroom.members.add(user)
+
+        return Response({"group": group.serialize()}, status=200)
