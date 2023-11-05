@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import parsers
 
-
+from notifications.models import Notification
+from notifications.views import send_notification
 from groups.models import Group, GroupInvitation, GroupMember
 from chats.models import GroupChatRoom
 from users.models import User
@@ -62,4 +63,12 @@ class InviteUserToJoinGroup(APIView):
             return Response({"user_err": True}, status=400)
 
         group_invitation = GroupInvitation.objects.get_or_create(group=group, user=user, inviter_id=token_verification(request))
+
+        notification_sender = User.objects.get(id=token_verification(request))
+        send_notification(
+            sender=notification_sender,
+            receiver=user,
+            text=f"{notification_sender.username} has invited you to {group.name}",
+            _type="group_invitation"
+        )
         return Response({"invitation_sent": group_invitation.serialize()}, status=200)
