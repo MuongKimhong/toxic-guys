@@ -22,11 +22,24 @@ class ChatRoom(models.Model):
         }
 
 
+class MessageImage(models.Model):
+    image = models.ImageField(upload_to="message_images/")
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "image": profile_url(self.image),
+            "created_date": date_format(self.created_date)
+        }
+
+
 class Message(models.Model):
     chatroom = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
     sender = models.ForeignKey(User, related_name="sender", on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name="receiver", on_delete=models.CASCADE)
     text = models.TextField(blank=True)
+    images = models.ManyToManyField(MessageImage, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def serialize(self):
@@ -37,20 +50,7 @@ class Message(models.Model):
             "receiver": self.receiver.serialize(),
             "text" : self.text,
             "created_date": date_format(self.created_date),
-        }
-
-
-class MessageImage(models.Model):
-    message = models.ForeignKey(Message, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="message_images/")
-    created_date = models.DateTimeField(auto_now_add=True)
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "message_id": self.message.id,
-            "image": profile_url(self.image),
-            "created_date": date_format(self.created_date)
+            "images": [image.serialize() for image in self.images.all()]
         }
 
 
@@ -71,11 +71,24 @@ class GroupChatRoom(models.Model):
         }
 
 
+class GroupMessageImage(models.Model):
+    image = models.ImageField(upload_to="group_messages/images/")
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "image": profile_url(self.image),
+            "created_date": date_format(self.created_date)
+        }
+
+
 class GroupMessage(models.Model):
     group_chatroom = models.ForeignKey(GroupChatRoom, on_delete=models.CASCADE)
     sender = models.ForeignKey(User, related_name="message_sender", on_delete=models.CASCADE)
     text = models.TextField(blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
+    images = models.ManyToManyField(GroupMessageImage, blank=True)
 
     def serialize(self):
         return {
@@ -83,19 +96,6 @@ class GroupMessage(models.Model):
             "group_chatroom_id": self.group_chatroom.id,
             "sender": self.sender.serialize(),
             "text": self.text,
-            "created_date": date_format(self.created_date)
-        }
-
-
-class GroupMessageImage(models.Model):
-    group_message = models.ForeignKey(GroupMessage, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="group_messages/images/")
-    created_date = models.DateTimeField(auto_now_add=True)
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "group_message_id": self.group_message.id,
-            "image": profile_url(self.image),
-            "created_date": date_format(self.created_date)
+            "created_date": date_format(self.created_date),
+            "images": [image.serialize() for image in self.images.all()]
         }
