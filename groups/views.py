@@ -77,20 +77,28 @@ class InviteUserToJoinGroup(APIView):
 
 class AcceptGroupInvitation(APIView):
     permission_classes = [ IsAuthenticated ]
+    status = "accept"
 
     def post(self, request):
         try:
             group_inv = GroupInvitation.objects.get(id=request.data["group_invitation_id"])
         except GroupInvitation.DoesNotExist:
             return Response({"group_inv_err": True}, status=400)
-        
-        group_member = GroupMember.objects.get_or_create(
-            group=group_inv.group,
-            user=group_inv.user
-        )
-        group_chatroom = GroupChatRoom.objects.get(group__id=group_inv.group.id)
-        
-        if group_inv.user not in group_chatroom.members.all(): 
-            group_chatroom.members.add(group_inv.user)
 
-        return Response({"accepted": True}, status=200) 
+        if self.status == "accept": 
+            group_member = GroupMember.objects.get_or_create(
+                group=group_inv.group,
+                user=group_inv.user
+            )
+            group_chatroom = GroupChatRoom.objects.get(group__id=group_inv.group.id)
+            
+            if group_inv.user not in group_chatroom.members.all(): 
+                group_chatroom.members.add(group_inv.user)
+        else:
+            group_inv.delete()
+
+        return Response({f"{self.status}": True}, status=200) 
+
+
+class DeleteGroupInvitation(AcceptGroupInvitation):
+    status = "delete"
