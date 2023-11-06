@@ -152,3 +152,23 @@ class GetRandomUsersNotInGroup(APIView):
         random_users = [user.serialize() for user in random_users]
 
         return Response({"random_users": random_users}, status=200) 
+
+
+class GroupDetail(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def get(self, request):
+        try:
+            group_chatroom = GroupChatRoom.objects.get(id=request.query_params["room_id"])
+        except GroupChatRoom.DoesNotExist:
+            return Response({"group_err": True}, status=400)
+
+        try:
+            user = User.objects.get(id=request.query_params["user_id"])
+        except User.DoesNotExist:
+            return Response({"user_err": True}, status=400)
+
+        if user not in group_chatroom.members.all():
+            return Response({"not_in_group": True}, status=400)
+
+        return Response({"group": group_chatroom.serialize()}, status=200)
