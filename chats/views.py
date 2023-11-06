@@ -106,6 +106,9 @@ class SendMessageForGroupChatRoom(SendMessage):
 class DeleteMessage(APIView):
     permission_classes = [ IsAuthenticated ]
 
+    def action(self, message, request):
+        message.delete()
+
     def post(self, request):
         try:
             user = User.objects.get(id=token_verification(request))
@@ -128,5 +131,11 @@ class DeleteMessage(APIView):
             except GroupMessage.DoesNotExist:
                 return Response({"message_err": True}, status=400)
 
-        message.delete()
-        return Response({"deleted": True}, status=200)
+        self.action(message, request)
+        return Response({"success": True}, status=200)
+
+
+class UpdateMessage(DeleteMessage):
+    def action(self, message, request):
+        message.text = request.data.get("new_message_text")
+        message.save()
