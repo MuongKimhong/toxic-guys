@@ -76,10 +76,7 @@
           <v-list-item class="list-item">
             <span class="ml-auto mr-auto">Group Detail</span>
           </v-list-item>
-          <v-list-item class="list-item">
-            <span class="ml-auto mr-auto">Members</span>
-          </v-list-item>
-          <v-list-item>
+          <v-list-item v-if="chatroom.type == 'group'">
             <span class="ml-auto mr-auto">Code: {{ chatroom.group.code }}</span>
           </v-list-item>
           <v-list-item>
@@ -105,19 +102,13 @@ export default {
 
   data: () => ({
     groupDialog: {
-      w: 300,
-      h: 240,
+      w: 200,
+      h: 190,
       showDialog: false,
     },
 
-    cloneChatRoom: {},
-
     randomUsers: [],
   }),
-
-  created() {
-    this.cloneChatRoom = this.chatroom;
-  },
 
   methods: {
     typingEvent: function () {},
