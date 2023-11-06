@@ -172,3 +172,32 @@ class GroupDetail(APIView):
             return Response({"not_in_group": True}, status=400)
 
         return Response({"group": group_chatroom.serialize()}, status=200)
+
+
+class UpdateGroupDetail(APIView):
+    permission_classes = [ IsAuthenticated ]
+    parser_classes = [ parsers.MultiPartParser ]
+
+    def post(self, request):
+        try:
+            group_chatroom = GroupChatRoom.objects.get(id=request.data["room_id"])
+        except GroupChatRoom.DoesNotExist:
+            return Response({"group_err": True}, status=400)
+
+        try:
+            user = User.objects.get(id=token_verification(request))
+        except User.DoesNotExist:
+            return Response({"user_err": True}, status=400)
+
+        if user not in group_chatroom.members.all():
+            return Response({"not_in_group": True}, status=400)        
+
+        group = group_chatroom.group
+        group.profile = request.data["profile"]
+        group.name = request.data["name"]
+        group.is_public = True if request.data["status"] == "Public" else False
+        group.is_private = True if request.data["status"] == "Private" else False
+        group.save()
+
+        return Response({"group": group.serialize()}, status=200)
+ 
