@@ -114,6 +114,7 @@ export default {
         .get("api-users/get-random-users/", {
           params: {
             page: this.currentPage,
+            number_per_page: 10,
           },
           headers: {
             Authorization: `Bearer ${this.$store.state.user.accessToken}`,
@@ -154,6 +155,7 @@ export default {
             params: {
               search_text: this.searchText,
               page: this.currentPage,
+              number_per_page: 10,
             },
             headers: {
               Authorization: `Bearer ${this.$store.state.user.accessToken}`,

@@ -225,11 +225,12 @@ class GetRandomUsers(APIView):
 
     def get(self, request):
         page = request.query_params.get("page")
+        number_per_page = request.query_params.get("number_per_page")
         users = list(User.objects.all().exclude(id=token_verification(request)))
 
         random_users = sample(users, len(users))
 
-        paginator = Paginator(random_users, per_page=10)
+        paginator = Paginator(random_users, per_page=number_per_page)
         random_users = paginator.get_page(page).object_list
 
         response = []
@@ -247,12 +248,13 @@ class SearchUser(APIView):
     def get(self, request):
         search_text = request.query_params.get("search_text")
         paginator_page = request.query_params.get("page")
+        number_per_page = request.query_params.get("number_per_page")
 
         if search_text is None:
             return Response({"results": []}, status=200)
 
         users = User.objects.filter(username__icontains=search_text).exclude(id=token_verification(request)) 
-        paginator = Paginator(list(users), per_page=10)
+        paginator = Paginator(list(users), per_page=number_per_page)
         results = paginator.get_page(paginator_page).object_list
 
         response = []
