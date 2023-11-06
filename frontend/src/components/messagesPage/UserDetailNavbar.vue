@@ -55,17 +55,50 @@
         <i class="fas fa-phone white--text" style="font-size: 15px"></i>
       </span>
     </v-btn>
-    <v-btn small text>
+    <v-btn small text @click="threeDotBtnOnClick()">
       <span>
         <i class="fas fa-ellipsis-h white--text" style="font-size: 15px"></i>
       </span>
     </v-btn>
+
+    <v-dialog v-model="showGroupThreeDotDialog" width="600" height="600">
+      <v-card width="600" height="600" class="px-5 py-5 white--text" dark>
+        <v-text-field
+          class="mt-2"
+          dense
+          label="Search users"
+          dark
+          outlined
+          append-icon="mdi-account-search"
+          v-model="searchText"
+          @keyup="typingEvent()"
+        ></v-text-field>
+      </v-card>
+    </v-dialog>
   </v-card-title>
 </template>
 
 <script>
+// import axios from "axios";
+
 export default {
   name: "UserDetailNavbar",
   props: ["chatroom"],
+
+  data: () => ({
+    showGroupThreeDotDialog: true,
+    randomUsers: [],
+  }),
+
+  methods: {
+    threeDotBtnOnClick: function () {
+      // if (chatroom.type === "group") {
+      // }
+    },
+
+    typingEvent: function () {},
+
+    getRandomUsers: function () {},
+  },
 };
 </script>

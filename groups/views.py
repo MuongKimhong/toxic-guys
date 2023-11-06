@@ -1,6 +1,7 @@
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from django.core.paginator import Paginator
 from rest_framework.views import APIView
 from rest_framework import parsers
 
@@ -10,6 +11,7 @@ from groups.models import Group, GroupInvitation, GroupMember
 from chats.models import GroupChatRoom
 from users.models import User
 from users.utils import token_verification
+from random import sample
 
 
 class CreateGroup(APIView):
@@ -124,3 +126,29 @@ class JoinGroupWithCode(APIView):
             group_chatroom.members.add(user)
 
         return Response({"group": group.serialize()}, status=200)
+
+
+# get random users that are not in specific group
+class GetRandomUsersNotInGroup(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def get(self, request):
+        group_chatroom = GroupChatRoom.objects.get(id=request.query_params["group_chatroom_id"])
+        number_per_page = request.query_params["number_per_page"]
+        page = request.query_params["page"]
+
+        users = User.objects.all().order_by("-id")
+
+        # user that's not in group
+        not_in_group = []
+
+        for user in users:
+            if user not in group_chatroom.members.all():
+                not_in_group.append(user)
+
+        paginator = Paginator(not_in_group, per_page=number_per_page)
+        random_users = paginator.get_page(page)
+        random_users = sample(random_users, len(random_users))
+        random_users = [user.serialize() for user in random_users]
+
+        return Response({"random_users": random_users}, status=200) 

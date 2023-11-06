@@ -2,7 +2,6 @@ from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
-from django.core.paginator import Paginator
 from django.core.cache import cache
 from rest_framework.views import APIView
 
