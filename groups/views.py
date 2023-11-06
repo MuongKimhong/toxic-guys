@@ -201,3 +201,25 @@ class UpdateGroupDetail(APIView):
 
         return Response({"group": group.serialize()}, status=200)
  
+
+ class LeaveGroup(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        try:
+            group_chatroom = GroupChatRoom.objects.get(id=request.data["room_id"])
+        except GroupChatRoom.DoesNotExist:
+            return Response({"group_err": True}, status=400)
+
+        try:
+            user = User.objects.get(id=token_verification(request))
+        except User.DoesNotExist:
+            return Response({"user_err": True}, status=400)
+
+        if user not in group_chatroom.members.all():
+            return Response({"not_in_group": True}, status=400)
+
+        group_chatroom.members.remove(user) 
+        group_member = GroupMember.objects.get(group__id=group_chatroom.group.id, user__id=user.id) 
+        group_member.delete()
+        return Response({"left": True}, status=200)
