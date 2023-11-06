@@ -39,4 +39,8 @@ socketIO.on("connection", (socket) => {
     socket.on("connection-accepted", (requestSenderId) => {
         socket.broadcast.emit("accepted", requestSenderId);
     })
+
+    socket.on("send-message", (message) => {
+        socket.broadcast.emit("new-message", message);
+    })
 })

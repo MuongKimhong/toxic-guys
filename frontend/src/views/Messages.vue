@@ -92,6 +92,7 @@ export default {
     });
 
     this.getChatRoomList();
+    this.listenToWebSocketEventHandling();
   },
 
   methods: {
@@ -169,6 +170,8 @@ export default {
           this.messageText = "";
           this.messagesInChatroom.push(res.data["message"]);
           this.getChatRoomList();
+
+          this.$webSocket.emit("send-message", res.data["message"]);
         });
     },
 
@@ -209,6 +212,14 @@ export default {
             this.getMessagesInChatroom(this.selectedChatRoom);
           }
         });
+    },
+
+    listenToWebSocketEventHandling: function () {
+      this.$webSocket.on("new-message", (message) => {
+        if (message.receiver.id === this.$store.state.user.id) {
+          this.messagesInChatroom.push(message);
+        }
+      });
     },
   },
 };

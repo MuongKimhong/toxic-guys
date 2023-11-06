@@ -111,7 +111,11 @@
                 <span class="ml-2">{{ notification.text }}</span>
               </v-list-item-title>
 
-              <v-list-item-title v-else>Hello</v-list-item-title>
+              <v-list-item-title
+                v-else-if="notification.type == 'group_invitation'"
+              >
+                hELlo
+              </v-list-item-title>
             </v-list-item>
           </v-list>
           <v-list v-else class="text-center mt-5"> No notifications </v-list>
