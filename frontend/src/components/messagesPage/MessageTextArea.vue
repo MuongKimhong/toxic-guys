@@ -1,7 +1,8 @@
 <template>
   <v-card-text
     class="white--text py-2 px-2 d-flex flex-column"
-    style="background-color: rgb(78, 78, 78); height: 100%"
+    style="background-color: rgb(78, 78, 78); height: 100%; overflow-y: auto"
+    id="message-text-area"
   >
     <v-spacer></v-spacer>
     <div v-for="(message, index) in messages" :key="index" class="text my-1">
@@ -27,6 +28,28 @@
 export default {
   name: "MessageTextArea",
   props: ["messages"],
+
+  created() {
+    this.scrollToBottom(100);
+  },
+
+  watch: {
+    messages(newValue) {
+      if (newValue) {
+        this.scrollToBottom(50);
+      }
+    },
+  },
+
+  methods: {
+    scrollToBottom: function (timeout) {
+      setTimeout(() => {
+        var element = document.getElementById("message-text-area");
+        document.getElementById("message-text-area").scrollTop =
+          element.scrollHeight;
+      }, timeout);
+    },
+  },
 };
 </script>
 
