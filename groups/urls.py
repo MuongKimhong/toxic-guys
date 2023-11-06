@@ -7,5 +7,6 @@ urlpatterns = [
     path("accept-group-invitation/", AcceptGroupInvitation.as_view()),
     path("delete-group-invitation/", DeleteGroupInvitation.as_view()),
     path("join-group-with-code/", JoinGroupWithCode.as_view()),
-    path('get-users-not-in-group/', GetRandomUsersNotInGroup.as_view())
+    path('get-users-not-in-group/', GetRandomUsersNotInGroup.as_view()),
+    path("group-detail/", GroupDetail.as_view())
 ]
