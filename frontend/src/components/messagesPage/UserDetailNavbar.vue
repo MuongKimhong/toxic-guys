@@ -55,24 +55,42 @@
         <i class="fas fa-phone white--text" style="font-size: 15px"></i>
       </span>
     </v-btn>
-    <v-btn small text @click="threeDotBtnOnClick()">
+    <v-btn small text @click="groupDialog.showDialog = true">
       <span>
         <i class="fas fa-ellipsis-h white--text" style="font-size: 15px"></i>
       </span>
     </v-btn>
 
-    <v-dialog v-model="showGroupThreeDotDialog" width="600" height="600">
-      <v-card width="600" height="600" class="px-5 py-5 white--text" dark>
-        <v-text-field
-          class="mt-2"
-          dense
-          label="Search users"
-          dark
-          outlined
-          append-icon="mdi-account-search"
-          v-model="searchText"
-          @keyup="typingEvent()"
-        ></v-text-field>
+    <v-dialog
+      v-model="groupDialog.showDialog"
+      :width="groupDialog.w"
+      :height="groupDialog.h"
+    >
+      <v-card
+        :width="groupDialog.w"
+        :height="groupDialog.h"
+        class="px-2 py-2 white--text"
+        dark
+      >
+        <v-list>
+          <v-list-item class="list-item">
+            <span class="ml-auto mr-auto">Group Detail</span>
+          </v-list-item>
+          <v-list-item class="list-item">
+            <span class="ml-auto mr-auto">Members</span>
+          </v-list-item>
+          <v-list-item>
+            <span class="ml-auto mr-auto">Code: {{ chatroom.group.code }}</span>
+          </v-list-item>
+          <v-list-item>
+            <v-btn
+              class="ml-auto mr-auto text-capitalize red white--text"
+              small
+            >
+              Leave
+            </v-btn>
+          </v-list-item>
+        </v-list>
       </v-card>
     </v-dialog>
   </v-card-title>
@@ -86,19 +104,34 @@ export default {
   props: ["chatroom"],
 
   data: () => ({
-    showGroupThreeDotDialog: true,
+    groupDialog: {
+      w: 300,
+      h: 240,
+      showDialog: false,
+    },
+
+    cloneChatRoom: {},
+
     randomUsers: [],
   }),
 
-  methods: {
-    threeDotBtnOnClick: function () {
-      // if (chatroom.type === "group") {
-      // }
-    },
+  created() {
+    this.cloneChatRoom = this.chatroom;
+  },
 
+  methods: {
     typingEvent: function () {},
 
     getRandomUsers: function () {},
   },
 };
 </script>
+
+<style scoped>
+.list-item {
+  cursor: pointer;
+}
+.list-item:hover {
+  background-color: rgb(95, 95, 95);
+}
+</style>
