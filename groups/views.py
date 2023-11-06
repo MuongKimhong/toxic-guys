@@ -133,7 +133,7 @@ class GetRandomUsersNotInGroup(APIView):
     permission_classes = [ IsAuthenticated ]
 
     def get(self, request):
-        group_chatroom = GroupChatRoom.objects.get(id=request.query_params["group_chatroom_id"])
+        group_chatroom = GroupChatRoom.objects.get(id=request.query_params["room_id"])
         number_per_page = request.query_params["number_per_page"]
         page = request.query_params["page"]
 
