@@ -141,6 +141,18 @@ export default {
       }
     },
 
+    reorderChatRooms: function (type) {
+      for (const index in this.chatrooms) {
+        if (this.chatrooms[index].type === type) {
+          if (this.selectedChatRoom.id === this.chatrooms[index].id) {
+            this.chatrooms.splice(index, 1);
+            this.chatrooms.unshift(this.selectedChatRoom);
+            break;
+          }
+        }
+      }
+    },
+
     sendMessageForChatRoom: function () {
       if (this.messageText.trim() === "") return;
 
@@ -169,9 +181,8 @@ export default {
         .then((res) => {
           this.messageText = "";
           this.messagesInChatroom.push(res.data["message"]);
-          this.getChatRoomList();
-
           this.$webSocket.emit("send-message", res.data["message"]);
+          this.reorderChatRooms("user");
         });
     },
 
@@ -194,7 +205,7 @@ export default {
         .then((res) => {
           this.messageText = "";
           this.messagesInChatroom.push(res.data["message"]);
-          this.getChatRoomList();
+          this.reorderChatRooms("group");
         });
     },
 
