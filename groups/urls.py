@@ -11,4 +11,5 @@ urlpatterns = [
     path("group-detail/", GroupDetail.as_view()),
     path("update-group-detail/", UpdateGroupDetail.as_view()),
     path("leave-group/", LeaveGroup.as_view()),
+    path("kick-user-from-group/", KickUserFromGroup.as_view())
 ]

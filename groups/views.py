@@ -220,6 +220,46 @@ class UpdateGroupDetail(APIView):
             return Response({"not_in_group": True}, status=400)
 
         group_chatroom.members.remove(user) 
-        group_member = GroupMember.objects.get(group__id=group_chatroom.group.id, user__id=user.id) 
+
+        try:
+            group_member = GroupMember.objects.get(group__id=group_chatroom.group.id, user__id=user.id) 
+        except GroupMember.DoesNotExist:
+            return Response({"member_err": True}, status=400)
+
         group_member.delete()
         return Response({"left": True}, status=200)
+
+
+class KickUserFromGroup(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        try:
+            group_chatroom = GroupChatRoom.objects.get(id=request.data["room_id"])
+        except GroupChatRoom.DoesNotExist:
+            return Response({"group_err": True}, status=400)
+
+        try:
+            user = User.objects.get(id=token_verification(request))
+        except User.DoesNotExist:
+            return Response({"user_err": True}, status=400)
+        
+        try:
+            user_to_be_kicked = User.objects.get(id=request.data["user_to_be_kicked_id"])
+        except User.DoesNotExist:
+            return Response({"user_err": True}, status=400)
+
+        # only group creator can kick users 
+        if user.id != group_chatroom.group.creator.id:
+            return Response({"permission_err": True}, status=400)
+
+        if user_to_be_kicked in group_chatroom.members.all():
+            group_chatroom.members.remove(user_to_be_kicked) 
+
+        try:
+            group_member = GroupMember.objects.get(group__id=group_chatroom.group.id, user__id=user_to_be_kicked.id) 
+        except GroupMember.DoesNotExist:
+            return Response({"member_err": True}, status=400)
+
+        group_member.delete() 
+        return Response({"kicked": True}, status=200)
