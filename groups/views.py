@@ -164,7 +164,7 @@ class GroupDetail(APIView):
             return Response({"group_err": True}, status=400)
 
         try:
-            user = User.objects.get(id=request.query_params["user_id"])
+            user = User.objects.get(id=token_verification(request))
         except User.DoesNotExist:
             return Response({"user_err": True}, status=400)
 
