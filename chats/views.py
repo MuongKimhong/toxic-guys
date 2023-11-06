@@ -7,8 +7,8 @@ from itertools import chain
 
 from users.utils import token_verification
 from users.models import User
-from chats.models import ChatRoom, Message, MessageImage
-from chats.models import GroupChatRoom, GroupMessage, GroupMessageImage
+from chats.models import ChatRoom, Message
+from chats.models import GroupChatRoom, GroupMessage
 from groups.models import Group
 
 
@@ -101,3 +101,32 @@ class SendMessage(APIView):
 class SendMessageForGroupChatRoom(SendMessage):
     chatroom_model = GroupChatRoom
     chatroom_type  = "group"
+
+
+class DeleteMessage(APIView):
+    permission_classes = [ IsAuthenticated ]
+
+    def post(self, request):
+        try:
+            user = User.objects.get(id=token_verification(request))
+        except User.DoesNotExist:
+            return Response({"user_err": True}, status=400)
+
+        message_type = request.data.get("message_type")
+
+        if (message_type != "user") and (message_type != "group"):
+            return Response({"wrong_param": True}, status=400)
+
+        if message_type == "user":
+            try:
+                message = Message.objects.get(id=request.data["message_id"], sender__id=user.id)
+            except Message.DoesNotExist:
+                return Response({"message_err": True}, status=400)
+        elif message_type == "group":
+            try:
+                message = GroupMessage.objects.get(id=request.data["message_id"], sender__id=user.id)
+            except GroupMessage.DoesNotExist:
+                return Response({"message_err": True}, status=400)
+
+        message.delete()
+        return Response({"deleted": True}, status=200)
