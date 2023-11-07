@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.core.paginator import Paginator
 from rest_framework.views import APIView
 from rest_framework import parsers
+from django.core.cache import cache
 
 from notifications.models import Notification
 from notifications.views import send_notification
@@ -12,6 +13,9 @@ from chats.models import GroupChatRoom
 from users.models import User
 from users.utils import token_verification
 from random import sample
+
+
+TEN_MINUTES_IN_SECONDS = 10 * 60
 
 
 class CreateGroup(APIView):
@@ -136,15 +140,22 @@ class GetRandomUsersNotInGroup(APIView):
         group_chatroom = GroupChatRoom.objects.get(id=request.query_params["room_id"])
         number_per_page = request.query_params["number_per_page"]
         page = request.query_params["page"]
+        
+        if cache.get(f"random_users_not_in_group{group_chatroom.id}") is None:
+            print("no cache")
+            users = User.objects.all().order_by("-id")
 
-        users = User.objects.all().order_by("-id")
+            # user that's not in group
+            not_in_group = []
 
-        # user that's not in group
-        not_in_group = []
-
-        for user in users:
-            if user not in group_chatroom.members.all():
-                not_in_group.append(user)
+            for user in users:
+                if user not in group_chatroom.members.all():
+                    not_in_group.append(user)
+            
+            cache.set(f"random_users_not_in_group{group_chatroom.id}", not_in_group, TEN_MINUTES_IN_SECONDS)
+        else:
+            print("cached")
+            not_in_group = cache.get(f"random_users_not_in_group{group_chatroom.id}")
 
         paginator = Paginator(not_in_group, per_page=number_per_page)
         random_users = paginator.get_page(page)
