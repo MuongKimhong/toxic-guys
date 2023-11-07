@@ -97,6 +97,55 @@
               Save
             </v-btn>
           </div>
+
+          <!-- members -->
+          <div class="mt-10">
+            <v-simple-table
+              style="background-color: rgb(78, 78, 78)"
+              dark
+              class="white--text"
+            >
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left white--text">Members</th>
+                    <th class="text-left white--text"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(user, index) in group.members" :key="index">
+                    <td class="text-left">
+                      <v-avatar size="28" color="white">
+                        <v-img
+                          v-if="user.profile_url == ''"
+                          :src="require('../../public/userimg.png')"
+                        ></v-img>
+                        <v-img v-else :src="user.profile_url"></v-img>
+                      </v-avatar>
+                      <span class="ml-2">
+                        {{ user.username }}
+                        <span v-if="group.group.creator.id === user.id">
+                          (admin)
+                        </span>
+                      </span>
+                    </td>
+                    <td class="text-right">
+                      <v-btn
+                        v-if="
+                          group.group.creator.id === $store.state.user.id &&
+                          user.id != $store.state.user.id
+                        "
+                        small
+                        class="dark-grey white--text text-capitalize"
+                      >
+                        Kick
+                      </v-btn>
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </div>
         </div>
       </v-col>
     </v-row>
