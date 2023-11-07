@@ -193,7 +193,7 @@
                         <v-btn
                           x-small
                           class="white black--text text-capitalize"
-                          v-if="invitedUserIds.includes(user.id) == false"
+                          v-if="user.invited == false"
                           @click="inviteBtnOnClick(user.id, index)"
                         >
                           Invite
@@ -394,14 +394,6 @@ export default {
         .then((res) => {
           this.randomUsers = res.data["random_users"];
           this.totalPages = res.data["total_pages"];
-          for (const index in this.randomUsers) {
-            if (
-              this.invitedUserIds.includes(this.randomUsers[index]) === false
-            ) {
-              // this.randomUsers[index]["invite"]
-              return;
-            }
-          }
         });
     },
 
@@ -421,10 +413,16 @@ export default {
     },
 
     inviteBtnOnClick: function (userId, index) {
+      this.randomUsers[index]["invited"] = !this.randomUsers[index]["invited"];
+
       if (this.invitedUserIds.includes(userId) === false) {
         this.invitedUserIds.push(userId);
       } else {
-        this.invitedUserIds.splice(index, 1);
+        for (const i in this.invitedUserIds) {
+          if (this.invitedUserIds[i] === userId) {
+            this.invitedUserIds.splice(i, 1);
+          }
+        }
       }
     },
   },

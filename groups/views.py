@@ -158,9 +158,37 @@ class GetRandomUsersNotInGroup(APIView):
         paginator = Paginator(not_in_group, per_page=number_per_page)
         random_users = paginator.get_page(page)
         random_users = sample(random_users, len(random_users))
-        random_users = [user.serialize() for user in random_users]
 
-        return Response({"random_users": random_users, "total_pages": paginator.num_pages}, status=200) 
+        users_serialize = []
+
+        for user in random_users:
+            user_serialize = user.serialize()
+            user_serialize["invited"] = False
+            users_serialize.append(user_serialize)
+
+        return Response({"random_users": users_serialize, "total_pages": paginator.num_pages}, status=200) 
+
+
+class SearchUsersNotInGroup(APIView):
+    permission_clases = [ IsAuthenticated ]
+
+    def get(self, request):
+        group_chatroom = GroupChatRoom.objects.get(id=request.query_params["room_id"])
+        number_per_page = request.query_params["number_per_page"]
+        page = request.query_params["page"]
+        search_text = request.query_params["search_text"]
+
+        users = User.objects.filter(username__icontains=search_text) 
+        paginator = Paginator(list(users), per_page=number_per_page)
+        users = paginator.get_page(page)
+        users_serialize = []
+
+        for user in users:
+            user_serialize = user.serialize()
+            user_serialize["invited"] = False
+            users_serialize.append(user_serialize)
+        
+        return Response({"users": users_serialize, "total_pages": paginator.num_pages}, status=200) 
 
 
 class GroupDetail(APIView):
