@@ -24,5 +24,6 @@ class Notification(models.Model):
             "text": self.text,
             "seen_by_receiver": self.seen_by_receiver,
             "created_date": date_format(self.created_date),
-            "group_invitation_id": self.group_invitation.id if self.group_invitation else None
+            "group_invitation": self.group_invitation.serialize() if self.group_invitation else None
+            # "group_invitation_id": self.group_invitation.id if self.group_invitation else None
         }

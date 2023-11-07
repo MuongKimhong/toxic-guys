@@ -68,7 +68,7 @@ class GroupInvitation(models.Model):
     inviter = models.ForeignKey(User, related_name="inviter", on_delete=models.CASCADE)
     accepted = models.BooleanField(default=False)
 
-    def serialize(self, request):
+    def serialize(self):
         return {
             "id": self.id,
             "group": self.group.serialize(),

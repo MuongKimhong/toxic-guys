@@ -10,6 +10,7 @@ from users.models import User
 from chats.models import ChatRoom, Message
 from chats.models import GroupChatRoom, GroupMessage
 from groups.models import Group
+from operator import itemgetter
 
 
 class GetChatRoomList(APIView):
@@ -19,9 +20,7 @@ class GetChatRoomList(APIView):
     chatroom that has the latest last_message_created_date will be the first
     '''
     def sort_chatrooms(self, combined_chatrooms_q):
-        sorted_chatrooms = sorted(
-            combined_chatrooms_q, key=lambda instance: instance.last_message_created_date
-        )
+        sorted_chatrooms = sorted(combined_chatrooms_q, key=lambda instance: instance.last_message_created_date ) 
         sorted_chatrooms.reverse()
         sorted_chatrooms = [room.serialize() for room in sorted_chatrooms]
         return sorted_chatrooms
@@ -29,7 +28,7 @@ class GetChatRoomList(APIView):
     def get(self, request):
         user_id = token_verification(request)
         chatrooms_q = ChatRoom.objects.filter(Q(creator__id=user_id) | Q(member__id=user_id))
-        group_chatrooms_q = GroupChatRoom.objects.filter(members=user_id).distinct()
+        group_chatrooms_q = GroupChatRoom.objects.filter(members=user_id)
 
         combined_chatrooms_q = chain(chatrooms_q, group_chatrooms_q)
         sorted_chatrooms = self.sort_chatrooms(combined_chatrooms_q)

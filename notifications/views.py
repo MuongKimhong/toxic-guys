@@ -8,7 +8,7 @@ from users.models import User
 from users.utils import token_verification
 
 
-def send_notification(sender, receiver, text, _type=None):
+def send_notification(sender, receiver, text, _type=None, group_inv=None):
 
     notification, created = Notification.objects.get_or_create(
         sender = sender,
@@ -17,6 +17,10 @@ def send_notification(sender, receiver, text, _type=None):
     )
     if _type is not None:
         notification._type = _type
+        notification.save()
+        
+    if group_inv is not None:
+        notification.group_invitation = group_inv
         notification.save()
 
 

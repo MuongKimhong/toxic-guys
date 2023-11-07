@@ -12,8 +12,8 @@ from groups.models import Group, GroupInvitation, GroupMember
 from chats.models import GroupChatRoom
 from users.models import User
 from users.utils import token_verification
+from datetime import datetime
 from random import sample
-
 import json
 
 
@@ -51,7 +51,7 @@ class CreateGroup(APIView):
         group.save()
 
         # when group is created, create an empty group chatroom 
-        group_chatroom = GroupChatRoom.objects.create(group=group)
+        group_chatroom = GroupChatRoom.objects.create(group=group, last_message_created_date=datetime.now())
         group_chatroom.members.add(user)
         return Response({"group_created": True}, status=200)
 
@@ -82,10 +82,10 @@ class InviteUserToJoinGroup(APIView):
             send_notification(
                 sender=notification_sender,
                 receiver=user,
-                text=f"{notification_sender.username} has invited you to {group.name}",
-                _type="group_invitation"
+                text=f"{notification_sender.username} has invited you to join {group.name}",
+                _type="group_invitation",
+                group_inv=group_invitation
             )
-
         return Response({"invitation_sent": True}, status=200)
 
 
@@ -97,6 +97,7 @@ class AcceptGroupInvitation(APIView):
         try:
             group_inv = GroupInvitation.objects.get(id=request.data["group_invitation_id"])
         except GroupInvitation.DoesNotExist:
+            print("g")
             return Response({"group_inv_err": True}, status=400)
 
         if self.status == "accept": 
@@ -108,6 +109,9 @@ class AcceptGroupInvitation(APIView):
             
             if group_inv.user not in group_chatroom.members.all(): 
                 group_chatroom.members.add(group_inv.user)
+            
+            group_inv.accepted = True
+            group_inv.save()
         else:
             group_inv.delete()
 

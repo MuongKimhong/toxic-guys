@@ -454,11 +454,15 @@ export default {
         })
         .then((res) => {
           if (res.data["invitation_sent"]) {
-            this.invitedUserIds = [];
+            this.$webSocket.emit(
+              "group_invitation",
+              JSON.stringify(this.invitedUserIds)
+            );
             this.randomUsers = [];
             this.showSearchUserDialog = false;
             this.currentPage = 1;
             this.totalPages = 0;
+            this.invitedUserIds = [];
           }
         })
         .catch(() => {});

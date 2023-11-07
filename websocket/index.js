@@ -43,4 +43,8 @@ socketIO.on("connection", (socket) => {
     socket.on("send-message", (message) => {
         socket.broadcast.emit("new-message", message);
     })
+
+    socket.on("group_invitation", (invitedUserIds) => {
+        socket.broadcast.emit("group-invitation-sent", invitedUserIds);
+    })
 })

@@ -112,9 +112,54 @@
               </v-list-item-title>
 
               <v-list-item-title
-                v-else-if="notification.type == 'group_invitation'"
+                v-else-if="
+                  notification.type == 'group_invitation' &&
+                  notification.group_invitation != null
+                "
               >
-                hELlo
+                <v-avatar size="26" color="white">
+                  <v-img
+                    v-if="notification.sender.profile_url == ''"
+                    :src="require('../../public/userimg.png')"
+                  ></v-img>
+                  <v-img v-else :src="notification.sender.profile_url"></v-img>
+                </v-avatar>
+
+                <span class="ml-2">{{ notification.text }}</span>
+
+                <div
+                  v-if="notification.group_invitation.accepted == false"
+                  class="mt-3 text-center"
+                >
+                  <v-btn
+                    x-small
+                    class="text-capitalize white--text red mr-2"
+                    @click="
+                      acceptOrDeleteGroupInvitation(
+                        notification,
+                        index,
+                        (accept = false),
+                        (reject = true)
+                      )
+                    "
+                  >
+                    Delete
+                  </v-btn>
+                  <v-btn
+                    x-small
+                    class="text-capitalize white--text green ml-2"
+                    @click="
+                      acceptOrDeleteGroupInvitation(
+                        notification,
+                        index,
+                        (accept = true),
+                        (reject = false)
+                      )
+                    "
+                  >
+                    Join
+                  </v-btn>
+                </div>
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -237,6 +282,18 @@ export default {
           }
         }
       });
+
+      this.$webSocket.on("group-invitation-sent", (invitedUserIds) => {
+        var ids = JSON.parse(invitedUserIds);
+
+        if (ids.includes(this.$store.state.user.id) === true) {
+          if (this.showNotificationDialog == false) {
+            this.totalUnSeenNotification = this.totalUnSeenNotification + 1;
+          } else if (this.showNotificationDialog == true) {
+            this.getNotifications();
+          }
+        }
+      });
     },
 
     acceptOrRejectConnectionRequest: function (
@@ -278,6 +335,63 @@ export default {
           }
         })
         .catch(() => {});
+    },
+
+    acceptOrDeleteGroupInvitation: function (
+      notificationObj,
+      index,
+      accept = false,
+      reject = false
+    ) {
+      if (accept === false && reject === false) {
+        return;
+      }
+
+      if (accept === true) {
+        axios
+          .post(
+            "api-groups/accept-group-invitation/",
+            {
+              group_invitation_id: notificationObj.group_invitation.id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.data["accept"]) {
+              this.notifications[index]["group_invitation"]["accepted"] = true;
+            }
+          })
+          .catch((res) => {
+            console.log(res);
+          });
+      }
+
+      if (reject === true) {
+        axios
+          .post(
+            "api-groups/delete-group-invitation/",
+            {
+              group_invitation_id: notificationObj.group_invitation.id,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.data["delete"]) {
+              this.notifications.splice(index, 1);
+            }
+          })
+          .catch((res) => {
+            console.log(res);
+          });
+      }
     },
 
     markNotificationAsSeenByReceiver: function () {
