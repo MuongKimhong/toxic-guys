@@ -193,8 +193,18 @@
                         <v-btn
                           x-small
                           class="white black--text text-capitalize"
+                          v-if="invitedUserIds.includes(user.id) == false"
+                          @click="inviteBtnOnClick(user.id, index)"
                         >
                           Invite
+                        </v-btn>
+                        <v-btn
+                          x-small
+                          class="white black--text text-capitalize"
+                          v-else
+                          @click="inviteBtnOnClick(user.id, index)"
+                        >
+                          Uninvite
                         </v-btn>
                       </td>
                     </tr>
@@ -203,8 +213,21 @@
               </v-simple-table>
 
               <div class="px-2 mt-5 d-flex">
-                <v-btn class="green white--text text-capitalize" x-small>
-                  Next
+                <v-btn
+                  v-if="currentPage > 1 && currentPage <= totalPages"
+                  x-small
+                  class="text-capitalize mr-1"
+                  @click="prevBtnOnClick()"
+                >
+                  Previous
+                </v-btn>
+                <v-btn
+                  v-if="currentPage >= 1 && currentPage < totalPages"
+                  x-small
+                  class="text-capitalize ml-1"
+                  @click="nextBtnOnClick()"
+                >
+                  Next >
                 </v-btn>
                 <v-btn
                   class="ml-auto green white--text text-capitalize"
@@ -248,6 +271,8 @@ export default {
     randomUsers: [],
     currentPage: 1,
     totalPages: 0,
+
+    invitedUserIds: [],
   }),
 
   created() {
@@ -369,12 +394,38 @@ export default {
         .then((res) => {
           this.randomUsers = res.data["random_users"];
           this.totalPages = res.data["total_pages"];
+          for (const index in this.randomUsers) {
+            if (
+              this.invitedUserIds.includes(this.randomUsers[index]) === false
+            ) {
+              // this.randomUsers[index]["invite"]
+              return;
+            }
+          }
         });
     },
 
     addMemberBtnOnClick: function () {
       this.getRandomUsersNotInGroup();
       this.showSearchUserDialog = true;
+    },
+
+    nextBtnOnClick: function () {
+      this.currentPage = this.currentPage + 1;
+      this.getRandomUsersNotInGroup();
+    },
+
+    prevBtnOnClick: function () {
+      this.currentPage = this.currentPage - 1;
+      this.getRandomUsersNotInGroup();
+    },
+
+    inviteBtnOnClick: function (userId, index) {
+      if (this.invitedUserIds.includes(userId) === false) {
+        this.invitedUserIds.push(userId);
+      } else {
+        this.invitedUserIds.splice(index, 1);
+      }
     },
   },
 };

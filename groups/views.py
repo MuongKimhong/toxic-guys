@@ -142,7 +142,6 @@ class GetRandomUsersNotInGroup(APIView):
         page = request.query_params["page"]
         
         if cache.get(f"random_users_not_in_group{group_chatroom.id}") is None:
-            print("no cache")
             users = User.objects.all().order_by("-id")
 
             # user that's not in group
@@ -154,7 +153,6 @@ class GetRandomUsersNotInGroup(APIView):
             
             cache.set(f"random_users_not_in_group{group_chatroom.id}", not_in_group, TEN_MINUTES_IN_SECONDS)
         else:
-            print("cached")
             not_in_group = cache.get(f"random_users_not_in_group{group_chatroom.id}")
 
         paginator = Paginator(not_in_group, per_page=number_per_page)
