@@ -3,45 +3,100 @@
     <v-row align="center" justify-content="center">
       <v-col cols="8" class="ml-auto mr-auto">
         <div v-if="group != null" class="text-center">
-          <div>
-            <v-avatar size="160" color="white" class="ml-auto mr-auto">
+          <div class="text-center">
+            <v-avatar
+              v-if="newGroupImageUrl === null"
+              size="120"
+              color="white"
+              class="ml-auto mr-auto"
+            >
               <v-img
-                v-if="group.group.profile == ''"
+                v-if="group.group.profile === ''"
                 :src="require(`../../public/groupimg.png`)"
               ></v-img>
               <v-img v-else :src="group.group.profile"></v-img>
             </v-avatar>
-            <!-- <div class="mt-5">
+            <v-avatar v-else size="120" color="white" class="ml-auto mr-auto">
+              <v-img :src="newGroupImageUrl"></v-img>
+            </v-avatar>
+
+            <div class="text-center mt-5">
               <v-btn
-                v-if="newProfile === null"
+                small
                 class="text-capitalize white--text"
                 style="background-color: rgb(95, 95, 95)"
-                small
-                @click="changeProfileBtnOnClick()"
+                @click="changeImageBtnOnClick()"
               >
-                Change profile
+                change Image
               </v-btn>
-              <v-btn
-                v-else
-                class="text-capitalize white--text"
-                style="background-color: green"
-                small
-                @click="changeProfile()"
-              >
-                Save image
-              </v-btn>
-            </div> -->
+            </div>
           </div>
 
-          <v-text-field
-            class="my-2"
-            dense
-            label="Group Name"
-            dark
-            outlined
-            v-model="group.group.name"
-            :error-messages="groupNameErr"
-          ></v-text-field>
+          <div class="mt-10">
+            <v-text-field
+              dark
+              label="Group name"
+              dense
+              outlined
+              rounded
+              counter="20"
+              v-model="groupName"
+              :error-messages="err.name"
+              @keyup="groupNameOnChange()"
+            ></v-text-field>
+
+            <v-select
+              :items="['Public', 'Private']"
+              density="compact"
+              dense
+              label="Group type"
+              dark
+              outlined
+              rounded
+              v-model="groupType"
+              :error-messages="err.type"
+              @change="groupTypeOnChange()"
+            ></v-select>
+
+            <v-textarea
+              rounded
+              outlined
+              dark
+              label="Description"
+              v-model="groupDescription"
+              counter="30"
+              @keyup="groupDescriptionOnChange()"
+            >
+            </v-textarea>
+          </div>
+
+          <div class="text-right mt-6">
+            <v-btn
+              class="text-capitalize mr-4"
+              small
+              @click="$router.push({ name: 'Messages' })"
+            >
+              Cancel
+            </v-btn>
+            <v-btn
+              v-if="changeDetected === false"
+              class="text-capitalize white--text"
+              dark
+              small
+              disabled
+            >
+              Save
+            </v-btn>
+            <v-btn
+              v-else
+              class="text-capitalize white--text"
+              dark
+              small
+              @click="saveBtnOnClick()"
+            >
+              Save
+            </v-btn>
+          </div>
         </div>
       </v-col>
     </v-row>
@@ -56,8 +111,20 @@ export default {
 
   data: () => ({
     group: null,
-    copiedGroup: null, // use to check update condition
-    groupNameErr: ""
+
+    newGroupImage: null,
+    newGroupImageUrl: null,
+    groupType: "",
+    groupName: "",
+    groupDescription: "",
+
+    err: {
+      name: "",
+      type: "",
+      description: "",
+    },
+
+    changeDetected: false,
   }),
 
   created() {
@@ -78,7 +145,14 @@ export default {
         .then((res) => {
           if (res.data["group"]) {
             this.group = res.data["group"];
-            this.copiedGroup = res.data["group"];
+            this.groupName = res.data["group"]["group"]["name"];
+            this.groupDescription = res.data["group"]["group"]["description"];
+
+            if (res.data["group"]["group"]["is_public"] === true) {
+              this.groupType = "Public";
+            } else {
+              this.groupType = "Private";
+            }
           }
         })
         .catch((err) => {
@@ -86,6 +160,75 @@ export default {
           else if (err.response.data["user_err"]) return;
           else if (err.response.data["not_in_group"]) return;
         });
+    },
+
+    changeImageBtnOnClick: function () {
+      let self = this;
+      let input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".jpg,.JPEG,.png";
+      input.onchange = () => {
+        let files = Array.from(input.files);
+        self.newGroupImage = files[0];
+        self.newGroupImageUrl = URL.createObjectURL(files[0]);
+        input.remove();
+        self.changeDetected = true;
+      };
+      input.click();
+    },
+
+    groupNameOnChange: function () {
+      if (this.groupName === this.group["group"]["name"])
+        this.changeDetected = false;
+      else this.changeDetected = true;
+    },
+
+    groupDescriptionOnChange: function () {
+      if (this.groupDescription === this.group["group"]["description"])
+        this.changeDetected = false;
+      else this.changeDetected = true;
+    },
+
+    groupTypeOnChange: function () {
+      if (
+        this.group["group"]["is_public"] == true &&
+        this.groupType === "Public"
+      ) {
+        this.changeDetected = false;
+      } else if (
+        this.group["group"]["is_private"] == true &&
+        this.groupType === "Private"
+      ) {
+        this.changeDetected = false;
+      } else {
+        this.changeDetected = true;
+      }
+    },
+
+    saveBtnOnClick: function () {
+      if (this.groupName.length > 20) return;
+      else if (this.groupDescription.length > 30) return;
+      else if (this.groupType != "Public" && this.groupType != "Private")
+        return;
+
+      var formData = new FormData();
+      formData.append("name", this.groupName);
+      formData.append("status", this.groupType);
+      formData.append("profile", this.newGroupImage);
+      formData.append("description", this.groupDescription);
+      formData.append("room_id", this.group["id"]);
+
+      axios
+        .post("api-groups/update-group-detail/", formData, {
+          headers: {
+            "content-type": "multipart/form-data",
+            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+          },
+        })
+        .then(() => {
+          this.changeDetected = false;
+        })
+        .catch(() => {});
     },
   },
 };

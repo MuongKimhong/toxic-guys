@@ -73,7 +73,7 @@
         dark
       >
         <v-list>
-          <v-list-item class="list-item">
+          <v-list-item class="list-item" @click="groupDetailOnClick()">
             <span class="ml-auto mr-auto">Group Detail</span>
           </v-list-item>
           <v-list-item v-if="chatroom.type == 'group'">
@@ -111,9 +111,12 @@ export default {
   }),
 
   methods: {
-    typingEvent: function () {},
-
-    getRandomUsers: function () {},
+    groupDetailOnClick: function () {
+      this.$router.push({
+        name: "GroupDetail",
+        params: { chatroomId: this.chatroom.id },
+      });
+    },
   },
 };
 </script>

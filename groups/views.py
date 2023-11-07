@@ -193,17 +193,20 @@ class UpdateGroupDetail(APIView):
             return Response({"not_in_group": True}, status=400)        
 
         group = group_chatroom.group
-        group.profile = request.data["profile"]
         group.name = request.data["name"]
         group.is_public = True if request.data["status"] == "Public" else False
         group.is_private = True if request.data["status"] == "Private" else False
+
+        if isinstance(request.data["profile"], InMemoryUploadedFile):
+            group.profile = request.data["profile"]
+
         group.save()
 
         return Response({"group": group.serialize()}, status=200)
  
 
- class LeaveGroup(APIView):
-    permission_classes = [ IsAuthenticated ]
+class LeaveGroup(APIView):
+    permission_clases = [ IsAuthenticated ]
 
     def post(self, request):
         try:
