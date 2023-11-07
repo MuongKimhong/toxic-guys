@@ -151,7 +151,7 @@ class GetRandomUsersNotInGroup(APIView):
         random_users = sample(random_users, len(random_users))
         random_users = [user.serialize() for user in random_users]
 
-        return Response({"random_users": random_users}, status=200) 
+        return Response({"random_users": random_users, "total_pages": paginator.num_pages}, status=200) 
 
 
 class GroupDetail(APIView):

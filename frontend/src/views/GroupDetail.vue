@@ -109,7 +109,15 @@
                 <thead>
                   <tr>
                     <th class="text-left white--text">Members</th>
-                    <th class="text-left white--text"></th>
+                    <th class="text-right white--text">
+                      <v-btn
+                        x-small
+                        class="green text-capitalize white--text"
+                        @click="addMemberBtnOnClick()"
+                      >
+                        Add member
+                      </v-btn>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -146,6 +154,67 @@
               </template>
             </v-simple-table>
           </div>
+
+          <v-dialog v-model="showSearchUserDialog" width="450" height="600">
+            <v-card width="450" height="600" class="px-3 py-3" dark>
+              <v-text-field
+                class="mt-2"
+                dense
+                label="Search users"
+                dark
+                outlined
+                append-icon="mdi-account-search"
+                v-model="searchText"
+              ></v-text-field>
+
+              <v-simple-table dark class="white--text">
+                <template v-slot:default>
+                  <thead>
+                    <tr>
+                      <th class="text-left white--text">Users</th>
+                      <th class="text-right white--text"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(user, index) in randomUsers" :key="index">
+                      <td class="text-left">
+                        <v-avatar size="28" color="white">
+                          <v-img
+                            v-if="user.profile_url == ''"
+                            :src="require('../../public/userimg.png')"
+                          ></v-img>
+                          <v-img v-else :src="user.profile_url"></v-img>
+                        </v-avatar>
+                        <span class="ml-2">
+                          {{ user.username }}
+                        </span>
+                      </td>
+                      <td class="text-right">
+                        <v-btn
+                          x-small
+                          class="white black--text text-capitalize"
+                        >
+                          Invite
+                        </v-btn>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+
+              <div class="px-2 mt-5 d-flex">
+                <v-btn class="green white--text text-capitalize" x-small>
+                  Next
+                </v-btn>
+                <v-btn
+                  class="ml-auto green white--text text-capitalize"
+                  x-small
+                >
+                  Confirm
+                </v-btn>
+              </div>
+            </v-card>
+          </v-dialog>
         </div>
       </v-col>
     </v-row>
@@ -172,8 +241,13 @@ export default {
       type: "",
       description: "",
     },
-
     changeDetected: false,
+
+    showSearchUserDialog: false,
+    searchText: "",
+    randomUsers: [],
+    currentPage: 1,
+    totalPages: 0,
   }),
 
   created() {
@@ -278,6 +352,29 @@ export default {
           this.changeDetected = false;
         })
         .catch(() => {});
+    },
+
+    getRandomUsersNotInGroup: function () {
+      axios
+        .get("api-groups/get-users-not-in-group/", {
+          params: {
+            room_id: this.group.id,
+            number_per_page: 8,
+            page: this.currentPage,
+          },
+          headers: {
+            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+          },
+        })
+        .then((res) => {
+          this.randomUsers = res.data["random_users"];
+          this.totalPages = res.data["total_pages"];
+        });
+    },
+
+    addMemberBtnOnClick: function () {
+      this.getRandomUsersNotInGroup();
+      this.showSearchUserDialog = true;
     },
   },
 };
