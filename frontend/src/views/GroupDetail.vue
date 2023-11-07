@@ -233,6 +233,7 @@
                 <v-btn
                   class="ml-auto green white--text text-capitalize"
                   x-small
+                  @click="confirmBtnOnClick()"
                 >
                   Confirm
                 </v-btn>
@@ -395,6 +396,16 @@ export default {
         .then((res) => {
           this.randomUsers = res.data["random_users"];
           this.totalPages = res.data["total_pages"];
+
+          if (this.invitedUserIds.length > 0) {
+            for (const i in this.randomUsers) {
+              if (
+                this.invitedUserIds.includes(this.randomUsers[i]["id"]) === true
+              ) {
+                this.randomUsers[i]["invited"] = true;
+              }
+            }
+          }
         });
     },
 
@@ -427,6 +438,32 @@ export default {
       }
     },
 
+    confirmBtnOnClick: function () {
+      if (this.invitedUserIds.length == 0) return;
+
+      var formData = new FormData();
+      formData.append("invited_user_ids", JSON.stringify(this.invitedUserIds));
+      formData.append("group", this.group.group.id);
+
+      axios
+        .post("api-groups/invite-user-to-join-group/", formData, {
+          headers: {
+            "content-type": "multipart/form-data",
+            Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+          },
+        })
+        .then((res) => {
+          if (res.data["invitation_sent"]) {
+            this.invitedUserIds = [];
+            this.randomUsers = [];
+            this.showSearchUserDialog = false;
+            this.currentPage = 1;
+            this.totalPages = 0;
+          }
+        })
+        .catch(() => {});
+    },
+
     searchUsersNotInGroup: function () {
       if (this.searchText.trim() === "") this.getRandomUsersNotInGroup();
       else {
@@ -446,8 +483,20 @@ export default {
             if (res.data["users"]) {
               this.randomUsers = res.data["users"];
               this.totalPages = res.data["total_pages"];
+
+              if (this.invitedUserIds.length > 0) {
+                for (const i in this.randomUsers) {
+                  if (
+                    this.invitedUserIds.includes(this.randomUsers[i]["id"]) ===
+                    true
+                  ) {
+                    this.randomUsers[i]["invited"] = true;
+                  }
+                }
+              }
             }
-          });
+          })
+          .catch(() => {});
       }
     },
   },

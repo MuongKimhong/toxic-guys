@@ -14,6 +14,8 @@ from users.models import User
 from users.utils import token_verification
 from random import sample
 
+import json
+
 
 TEN_MINUTES_IN_SECONDS = 10 * 60
 
@@ -56,31 +58,35 @@ class CreateGroup(APIView):
 
 class InviteUserToJoinGroup(APIView):
     permission_classes = [ IsAuthenticated ]
+    parser_classes = [ parsers.MultiPartParser ]
 
     def post(self, request):
         try:
             group = Group.objects.get(id=request.data["group"])
         except Group.DoesNotExist:
             return Response({"group_err": True}, status=400)
-        
-        try:
-            user = User.objects.get(id=request.data["user_to_be_invited"])
-        except User.DoesNotExist:
-            return Response({"user_err": True}, status=400)
 
-        group_invitation, created = GroupInvitation.objects.get_or_create(
-            group=group, user=user, inviter_id=token_verification(request)
-        )
+        invited_user_ids = json.loads(request.data["invited_user_ids"])
 
         notification_sender = User.objects.get(id=token_verification(request))
 
-        send_notification(
-            sender=notification_sender,
-            receiver=user,
-            text=f"{notification_sender.username} has invited you to {group.name}",
-            _type="group_invitation"
-        )
-        return Response({"invitation_sent": group_invitation.serialize()}, status=200)
+        for _id in invited_user_ids:
+            try:
+                user = User.objects.get(id=_id)
+            except User.DoesNotExist:
+                return Response({"user_err": True}, status=400)
+
+            group_invitation, created = GroupInvitation.objects.get_or_create(
+                group=group, user=user, inviter_id=token_verification(request)
+            )
+            send_notification(
+                sender=notification_sender,
+                receiver=user,
+                text=f"{notification_sender.username} has invited you to {group.name}",
+                _type="group_invitation"
+            )
+
+        return Response({"invitation_sent": True}, status=200)
 
 
 class AcceptGroupInvitation(APIView):
