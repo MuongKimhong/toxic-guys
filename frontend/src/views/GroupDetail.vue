@@ -165,6 +165,7 @@
                 outlined
                 append-icon="mdi-account-search"
                 v-model="searchText"
+                @keyup="searchUsersNotInGroup()"
               ></v-text-field>
 
               <v-simple-table dark class="white--text">
@@ -423,6 +424,30 @@ export default {
             this.invitedUserIds.splice(i, 1);
           }
         }
+      }
+    },
+
+    searchUsersNotInGroup: function () {
+      if (this.searchText.trim() === "") this.getRandomUsersNotInGroup();
+      else {
+        axios
+          .get("api-groups/search-users-not-in-group/", {
+            params: {
+              room_id: this.group.id,
+              number_per_page: 8,
+              page: this.currentPage,
+              search_text: this.searchText,
+            },
+            headers: {
+              Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+            },
+          })
+          .then((res) => {
+            if (res.data["users"]) {
+              this.randomUsers = res.data["users"];
+              this.totalPages = res.data["total_pages"];
+            }
+          });
       }
     },
   },

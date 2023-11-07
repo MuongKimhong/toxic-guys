@@ -178,8 +178,14 @@ class SearchUsersNotInGroup(APIView):
         page = request.query_params["page"]
         search_text = request.query_params["search_text"]
 
-        users = User.objects.filter(username__icontains=search_text) 
-        paginator = Paginator(list(users), per_page=number_per_page)
+        users = User.objects.filter(username__icontains=search_text).exclude(id=token_verification(request)) 
+        not_in_group = []
+
+        for user in users:
+            if user not in group_chatroom.members.all():
+                not_in_group.append(user)
+            
+        paginator = Paginator(not_in_group, per_page=number_per_page)
         users = paginator.get_page(page)
         users_serialize = []
 
