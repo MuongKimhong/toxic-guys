@@ -206,6 +206,15 @@ export default {
           this.messageText = "";
           this.messagesInChatroom.push(res.data["message"]);
           this.reorderChatRooms("group");
+
+          var webSocketData = {
+            groupChatroomId: this.selectedChatRoom.id,
+            message: res.data["message"],
+          };
+          this.$webSocket.emit(
+            "send-message-group",
+            JSON.stringify(webSocketData)
+          );
         });
     },
 
@@ -229,6 +238,26 @@ export default {
       this.$webSocket.on("new-message", (message) => {
         if (message.receiver.id === this.$store.state.user.id) {
           this.messagesInChatroom.push(message);
+        }
+      });
+
+      this.$webSocket.on("group-new-message", (data) => {
+        var messageData = JSON.parse(data);
+
+        for (const i in this.chatrooms) {
+          if (this.chatrooms[i].type === "group") {
+            if (this.chatrooms[i].id === messageData.groupChatroomId) {
+              if (this.selectedChatRoom.id != messageData.groupChatroomId) {
+                this.chatroomOnClick(this.chatrooms[i].id);
+              } else {
+                if (
+                  messageData.message.sender.id != this.$store.state.user.id
+                ) {
+                  this.messagesInChatroom.push(messageData.message);
+                }
+              }
+            }
+          }
         }
       });
     },

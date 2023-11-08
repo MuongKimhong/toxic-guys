@@ -97,7 +97,6 @@ class AcceptGroupInvitation(APIView):
         try:
             group_inv = GroupInvitation.objects.get(id=request.data["group_invitation_id"])
         except GroupInvitation.DoesNotExist:
-            print("g")
             return Response({"group_inv_err": True}, status=400)
 
         if self.status == "accept": 
