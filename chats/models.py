@@ -10,6 +10,7 @@ class ChatRoom(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     _type = models.CharField(max_length=10, default="user")
     last_message_created_date = models.DateTimeField(blank=True, null=True) # use to sort chatroom in GetChatRoomList API
+    last_message_text = models.TextField(blank=True)
 
     def serialize(self):
         return {
@@ -60,6 +61,7 @@ class GroupChatRoom(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     _type = models.CharField(max_length=10, default="group")
     last_message_created_date = models.DateTimeField(blank=True, null=True) # use to sort chatroom in GetChatRoomList API
+    last_message_text = models.TextField(blank=True)
 
     def serialize(self):
         return {
@@ -89,6 +91,7 @@ class GroupMessage(models.Model):
     text = models.TextField(blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     images = models.ManyToManyField(GroupMessageImage, blank=True)
+    seens = models.ManyToManyField(User, related_nam="seen_by_users", blank=True)
 
     def serialize(self):
         return {
