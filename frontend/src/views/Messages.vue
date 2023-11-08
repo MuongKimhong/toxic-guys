@@ -33,16 +33,13 @@
                 <!-- select images to upload -->
                 <v-row v-if="selectedImages.length > 0">
                   <v-col
-                    v-for="n in 3"
-                    :key="n"
+                    v-for="(image, index) in selectedImages"
+                    :key="index"
                     class="d-flex child-flex"
                     cols="1"
                   >
                     <v-img
-                      :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
-                      :lazy-src="`https://picsum.photos/10/6?image=${
-                        n * 5 + 10
-                      }`"
+                      :src="image.url"
                       aspect-ratio="1"
                       cover
                       class="bg-grey-lighten-2"
@@ -57,6 +54,7 @@
                       class="fas fa-images white--text"
                       id="images-icon"
                       style="font-size: 20px"
+                      @click="imageIconOnClick()"
                     ></i>
                   </span>
                   <v-text-field
@@ -334,7 +332,28 @@ export default {
       });
     },
 
+    imageIconOnClick: function () { 
+      let self = this;
+      self.selectedImages = [];
 
+      let input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".jpg,.JPEG,.png";
+      input.multiple = true;
+
+      input.onchange = () => {
+        let files = Array.from(input.files);
+
+        for (const i in files) {
+          self.selectedImages.push({
+            source: files[i],
+            url: URL.createObjectURL(files[i])
+          })
+        }
+        input.remove();
+      }
+      input.click();
+    }
   },
 };
 </script>
