@@ -42,7 +42,6 @@ class Message(models.Model):
     text = models.TextField(blank=True)
     images = models.ManyToManyField(MessageImage, blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
-    seens = models.ManyToManyField(User, related_name="seens_by_users", blank=True)
 
     def serialize(self):
         return {
@@ -53,8 +52,6 @@ class Message(models.Model):
             "text" : self.text,
             "created_date": date_format(self.created_date),
             "images": [image.serialize() for image in self.images.all()],
-            "seens": [user.serialize() for user in self.seens.all()],
-            "seen_ids": [user.id for user in self.seens.all()]
         }
 
 
@@ -94,7 +91,6 @@ class GroupMessage(models.Model):
     text = models.TextField(blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     images = models.ManyToManyField(GroupMessageImage, blank=True)
-    seens = models.ManyToManyField(User, related_nam="seen_by_users", blank=True)
 
     def serialize(self):
         return {
@@ -104,6 +100,4 @@ class GroupMessage(models.Model):
             "text": self.text,
             "created_date": date_format(self.created_date),
             "images": [image.serialize() for image in self.images.all()],
-            "seens": [user.serialize() for user in self.seens.all()],
-            "seen_ids": [user.id for user in self.seens.all()]
         }
