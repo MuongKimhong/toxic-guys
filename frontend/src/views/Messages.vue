@@ -141,24 +141,29 @@ export default {
       }
     },
 
-    reorderChatRooms: function (type) {
+    reorderChatRooms: function (type, lastMessage) {
       for (const index in this.chatrooms) {
         if (this.chatrooms[index].type === type) {
           if (this.selectedChatRoom.id === this.chatrooms[index].id) {
             this.chatrooms.splice(index, 1);
             this.chatrooms.unshift(this.selectedChatRoom);
+            this.chatrooms[0]["last_message_text"] = lastMessage.text;
+            this.chatrooms[0]["last_message_sender_name"] = lastMessage.sender.username;
             break;
           }
         }
       }
     },
 
-    reorderChatRoomsWithoutSelectChatroom: function (type, firstChatroom) {
+    reorderChatRoomsWithoutSelectChatroom: function (type, firstChatroom, lastMessage) {
       for (const i in this.chatrooms) {
         if (this.chatrooms[i].type === type) {
           if (this.chatrooms[i].id === firstChatroom.id) {
             this.chatrooms.splice(i, 1);
             this.chatrooms.unshift(firstChatroom);
+            this.chatrooms[0]["last_message_text"] = lastMessage.text;
+            this.chatrooms[0]["last_message_sender_name"] = lastMessage.sender.username;
+            break;
           }
         }
       }
@@ -193,14 +198,14 @@ export default {
         .then((res) => {
           this.messageText = "";
           this.messagesInChatroom.push(res.data["message"]);
-          this.reorderChatRooms("user");
+          this.reorderChatRooms("user", res.data["message"]);
 
           for (const i in this.chatrooms) {
             if (this.chatrooms[i].type == "user") {
               if (this.chatrooms[i].id === this.selectedChatRoom.id) {
                 this.chatrooms[i]["last_message_text"] = res.data["message"].text;
                 this.chatrooms[i]["last_message_sender_name"] = res.data["message"].sender.username;
-                break
+                break;
               }
             }
           }
@@ -227,19 +232,18 @@ export default {
             headers: {
               Authorization: `Bearer ${this.$store.state.user.accessToken}`,
             },
-          }
-        )
+          })
         .then((res) => {
           this.messageText = "";
           this.messagesInChatroom.push(res.data["message"]);
-          this.reorderChatRooms("group");
+          this.reorderChatRooms("group", res.data["message"]);
 
           for (const i in this.chatrooms) {
             if (this.chatrooms[i].type == "group") {
               if (this.chatrooms[i].id === this.selectedChatRoom.id) {
                 this.chatrooms[i]["last_message_text"] = res.data["message"].text;
                 this.chatrooms[i]["last_message_sender_name"] = res.data["message"].sender.username;
-                break
+                break;
               }
             }
           }
@@ -284,11 +288,11 @@ export default {
                   }
                 } 
                 else {
-                  this.reorderChatRoomsWithoutSelectChatroom("user", this.chatrooms[i]);
+                  this.reorderChatRoomsWithoutSelectChatroom("user", this.chatrooms[i], messageData.message);
                 }
               } 
               else {
-                this.reorderChatRoomsWithoutSelectChatroom("user", this.chatrooms[i]);
+                this.reorderChatRoomsWithoutSelectChatroom("user", this.chatrooms[i], messageData.message);
               }
             }
           }
@@ -310,11 +314,11 @@ export default {
                   }
                 } 
                 else {
-                  this.reorderChatRoomsWithoutSelectChatroom("group", this.chatrooms[i]);
+                  this.reorderChatRoomsWithoutSelectChatroom("group", this.chatrooms[i], messageData.message);
                 }
               } 
               else {
-                this.reorderChatRoomsWithoutSelectChatroom("group", this.chatrooms[i]);
+                this.reorderChatRoomsWithoutSelectChatroom("group", this.chatrooms[i], messageData.message);
               }
             }
           }
