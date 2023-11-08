@@ -40,6 +40,12 @@
             </v-avatar>
             <span class="white--text ml-2">{{ chatroom.member.username }}</span>
           </div>
+          <small
+            v-if="chatroom.last_message_text != ''"
+            class="white--text ml-1"
+          >
+            {{ chatroom.last_message_text }}
+          </small>
         </div>
         <div v-if="chatroom.type == 'group'">
           <div>
@@ -54,6 +60,13 @@
               {{ chatroom.group.name }}
             </span>
           </div>
+          <small
+            v-if="chatroom.last_message_text != ''"
+            class="white--text ml-1"
+          >
+            {{ chatroom.last_message_sender_name }} :
+            {{ chatroom.last_message_text }}
+          </small>
         </div>
       </v-list-item>
     </v-list>
