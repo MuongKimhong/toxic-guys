@@ -30,6 +30,27 @@
                 <MessageTextArea :messages="messagesInChatroom" />
                 <v-spacer></v-spacer>
 
+                <!-- select images to upload -->
+                <v-row v-if="selectedImages.length > 0">
+                  <v-col
+                    v-for="n in 3"
+                    :key="n"
+                    class="d-flex child-flex"
+                    cols="1"
+                  >
+                    <v-img
+                      :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
+                      :lazy-src="`https://picsum.photos/10/6?image=${
+                        n * 5 + 10
+                      }`"
+                      aspect-ratio="1"
+                      cover
+                      class="bg-grey-lighten-2"
+                    >
+                    </v-img>
+                  </v-col>
+                </v-row>
+
                 <v-card-actions style="background-color: rgb(78, 78, 78)">
                   <span class="mr-2">
                     <i
@@ -80,6 +101,8 @@ export default {
 
     messagesInChatroom: [],
     messageText: "",
+
+    selectedImages: []
   }),
 
   created() {
@@ -272,59 +295,46 @@ export default {
         });
     },
 
-    listenToWebSocketEventHandling: function () {
-      this.$webSocket.on("new-message", (message) => {
-        var messageData = JSON.parse(message);
+    updateMessagesOnWebSocketEvent: function (chatroomType, messageData) {
+      var roomIdKeyWord = "";
 
-        for (const i in this.chatrooms) {
-          if (this.chatrooms[i].type === "user") {
-            if (this.chatrooms[i].id === messageData.chatroomId) {
-              if (this.selectedChatRoom.type === "user") {
-                if (this.selectedChatRoom.id === messageData.chatroomId) {
-                  if ( messageData.message.sender.id != this.$store.state.user.id) {
-                    this.messagesInChatroom.push(messageData.message);
-                    this.chatrooms[i]["last_message_text"] = messageData.message.text;
-                    this.chatrooms[i]["last_message_sender_name"] = messageData.message.sender.username;
-                  }
-                } 
-                else {
-                  this.reorderChatRoomsWithoutSelectChatroom("user", this.chatrooms[i], messageData.message);
+      if (chatroomType === "user") roomIdKeyWord = "chatroomId";
+      else roomIdKeyWord = "groupChatroomId";
+
+      for (const i in this.chatrooms) {
+        if (this.chatrooms[i].type === chatroomType) {
+          if (this.chatrooms[i].id === messageData[`${roomIdKeyWord}`]) {
+            if (this.selectedChatRoom.type === chatroomType) {
+              if (this.selectedChatRoom.id === messageData[`${roomIdKeyWord}`]) {
+                if (messageData.message.sender.id != this.$store.state.user.id) {
+                  this.messagesInChatroom.push(messageData.message);
+                  this.chatrooms[i]["last_message_text"] = messageData.message.text;
+                  this.chatrooms[i]["last_message_sender_name"] = messageData.message.sender.username;
                 }
-              } 
-              else {
-                this.reorderChatRoomsWithoutSelectChatroom("user", this.chatrooms[i], messageData.message);
               }
+              else {
+                this.reorderChatRoomsWithoutSelectChatroom(chatroomType, this.chatrooms[i], messageData.message);
+              }
+            }
+            else {
+              this.reorderChatRoomsWithoutSelectChatroom(chatroomType, this.chatrooms[i], messageData.message);
             }
           }
         }
+      }
+    },
+
+    listenToWebSocketEventHandling: function () {
+      this.$webSocket.on("new-message", (message) => {
+        this.updateMessagesOnWebSocketEvent("user", JSON.parse(message));
       });
 
       this.$webSocket.on("group-new-message", (data) => {
-        var messageData = JSON.parse(data);
-
-        for (const i in this.chatrooms) {
-          if (this.chatrooms[i].type === "group") {
-            if (this.chatrooms[i].id === messageData.groupChatroomId) {
-              if (this.selectedChatRoom.type === "group") {
-                if (this.selectedChatRoom.id === messageData.groupChatroomId) {
-                  if ( messageData.message.sender.id != this.$store.state.user.id) {
-                    this.messagesInChatroom.push(messageData.message);
-                    this.chatrooms[i]["last_message_text"] = messageData.message.text;
-                    this.chatrooms[i]["last_message_sender_name"] = messageData.message.sender.username;
-                  }
-                } 
-                else {
-                  this.reorderChatRoomsWithoutSelectChatroom("group", this.chatrooms[i], messageData.message);
-                }
-              } 
-              else {
-                this.reorderChatRoomsWithoutSelectChatroom("group", this.chatrooms[i], messageData.message);
-              }
-            }
-          }
-        }
+        this.updateMessagesOnWebSocketEvent("group", JSON.parse(data));
       });
     },
+
+
   },
 };
 </script>
