@@ -93,6 +93,7 @@ class SendMessage(APIView):
                 text=request.data["text"]
             )
         chatroom.last_message_created_date = message.created_date
+        chatroom.last_message_text = message.text
         chatroom.save()
         return Response({"message": message.serialize()}, status=200)
 
