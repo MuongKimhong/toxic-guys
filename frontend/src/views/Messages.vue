@@ -106,8 +106,11 @@ export default {
   created() {
     document.addEventListener("keyup", (event) => {
       if (event.key == "Enter") {
-        if (this.messageText.trim() != "") {
+        if (this.messageText.trim() != "" && this.selectedImages.length == 0) {
           this.sendMessage();
+        }
+        else if (this.selectedImages.length > 0) {
+          this.sendMessageAsImages();
         }
       }
     });
@@ -156,7 +159,12 @@ export default {
 
     sendMessage: function () {
       if (this.selectedChatRoom.type === "user") {
-        this.sendMessageForChatRoom();
+        if (this.selectedImages.length > 0) {
+          this.sendMessageAsImages();
+        }
+        else {
+          this.sendMessageForChatRoom();
+        }
       } else if (this.selectedChatRoom.type === "group") {
         this.sendMessageForGroupChatRoom();
       }
@@ -345,6 +353,7 @@ export default {
         let files = Array.from(input.files);
 
         for (const i in files) {
+          console.log(files[i])
           self.selectedImages.push({
             source: files[i],
             url: URL.createObjectURL(files[i])
@@ -357,10 +366,25 @@ export default {
 
     sendMessageAsImages: function () {
       if (this.selectedImages.length == 0) return;
-      
+
+      var receiverId = null;
+
+      if (this.selectedChatRoom.creator.id == this.$store.state.user.id) {
+        receiverId = this.selectedChatRoom.member.id;
+      } 
+      else {
+        receiverId = this.selectedChatRoom.creator.id;
+      }
+ 
       var formData = new FormData();
       formData.append("room_id", this.selectedChatRoom.id);
-      formData.append("images", JSON.stringify(this.selectedImages));
+      formData.append("text", this.messageText);
+      formData.append("receiver_id", receiverId);
+      formData.append("total_images", this.selectedImages.length);
+      
+      for (const i in this.selectedImages) {
+        formData.append(`image${i}`, this.selectedImages[i]["source"]);
+      }
 
       axios.post("api-chats/send-message-as-image/", formData, {
         headers: {
@@ -368,8 +392,28 @@ export default {
           Authorization: `Bearer ${this.$store.state.user.accessToken}`,
         },
       })
-      .then(() => {
+      .then((res) => {
+        this.messageText = "";
+        this.messagesInChatroom.push(res.data["message"]);
+        this.reorderChatRooms("user", res.data["message"]);
 
+        for (const i in this.chatrooms) {
+          if (this.chatrooms[i].type == "user") {
+            if (this.chatrooms[i].id === this.selectedChatRoom.id) {
+              this.chatrooms[i]["last_message_text"] = res.data["message"].text;
+              this.chatrooms[i]["last_message_sender_name"] = res.data["message"].sender.username;
+              break;
+            }
+          }
+        }
+
+        var webSocketData = {
+          chatroomId: this.selectedChatRoom.id,
+          message: res.data["message"]
+        };
+        this.$webSocket.emit("send-message", JSON.stringify(webSocketData));
+
+        this.selectedImages = []; 
       })
       .catch(() => {})
     }

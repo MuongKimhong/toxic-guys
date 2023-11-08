@@ -14,10 +14,26 @@
           ></v-img>
           <v-img v-else :src="message.sender.profile_url"></v-img>
         </v-avatar>
-        <span class="message-text-left">{{ message.text }}</span>
+        <div
+          v-if="message.images.length > 0"
+          class="d-flex"
+          style="width: 200px; height: 60px"
+        >
+          <v-img
+            :width="50"
+            v-for="(image, i) in message.images"
+            :key="i"
+            :src="image.image"
+          ></v-img>
+        </div>
+        <span v-if="message.text != ''" class="message-text-left">
+          {{ message.text }}
+        </span>
       </div>
       <div v-else>
-        <span class="message-text-right">{{ message.text }}</span>
+        <span v-if="message.text != ''" class="message-text-right">{{
+          message.text
+        }}</span>
       </div>
     </div>
     <div class="text" style=""></div>

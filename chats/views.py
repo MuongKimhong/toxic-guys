@@ -1,4 +1,5 @@
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import parsers
@@ -148,12 +149,31 @@ class SendMessageAsImage(APIView):
 
     def post(self, request):
         chatroom = ChatRoom.objects.get(id=request.data["room_id"])
-        images = json.loads(request.data["images"])
+        total_images = request.data["total_images"]
 
-        message = Message.objects.create(sender_id=token_verification(request), chatroom_id=chatroom.id)       
+        message = Message.objects.create(
+            sender_id=token_verification(request), 
+            chatroom_id=chatroom.id, 
+            text=request.data["text"],
+            receiver_id=request.data["receiver_id"]
+        ) 
 
-        for image in images:
-            message_image = MessageImage.objects.create(image=image)
-            message.images.add(message_image)
+        for i in range(int(total_images)):
+            if isinstance(request.data[f"image{i}"], InMemoryUploadedFile):
+                message_image = MessageImage.objects.create(image=request.data[f"image{i}"])
+                message.images.add(message_image)
+              
+        chatroom.last_message_text = message.text if message.text != "" else "sent a photo"
 
+        if message.text == "":
+            if int(total_images) == 1:
+                chatroom.last_message_text = "sent a photo"
+            else:
+                chatroom.last_message_text = "sent photos"
+        else:
+            chatroom.last_message_text = message.text
+
+        chatroom.last_message_sender_name = message.sender.username
+        chatroom.last_message_created_date = message.created_date
+        chatroom.save()
         return Response({"message": message.serialize()}, status=200)
