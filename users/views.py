@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 
 from rest_framework import parsers
 from random import sample
+from datetime import datetime
 import random
 import jwt
 
@@ -391,7 +392,8 @@ class AcceptOrRejectConnectionRequest(APIView):
     def create_chatroom(self, request):
         chatroom = ChatRoom.objects.create(
             creator_id=token_verification(request),
-            member_id=request.data["request_sender_id"]
+            member_id=request.data["request_sender_id"],
+            last_message_created_date=datetime.now()
         )
         
     # resposne to connection request

@@ -153,6 +153,17 @@ export default {
       }
     },
 
+    reorderChatRoomsWithoutSelectChatroom: function (type, firstChatroom) {
+      for (const i in this.chatrooms) {
+        if (this.chatrooms[i].type === type) {
+          if (this.chatrooms[i].id === firstChatroom.id) {
+            this.chatrooms.splice(i, 1);
+            this.chatrooms.unshift(firstChatroom);
+          }
+        }
+      }
+    },
+
     sendMessageForChatRoom: function () {
       if (this.messageText.trim() === "") return;
 
@@ -247,14 +258,25 @@ export default {
         for (const i in this.chatrooms) {
           if (this.chatrooms[i].type === "group") {
             if (this.chatrooms[i].id === messageData.groupChatroomId) {
-              if (this.selectedChatRoom.id != messageData.groupChatroomId) {
-                this.chatroomOnClick(this.chatrooms[i].id);
-              } else {
-                if (
-                  messageData.message.sender.id != this.$store.state.user.id
-                ) {
-                  this.messagesInChatroom.push(messageData.message);
+              if (this.selectedChatRoom.type === "group") {
+                if (this.selectedChatRoom.id != messageData.groupChatroomId) {
+                  // this.reorderChatRooms("group");
+                  this.reorderChatRoomsWithoutSelectChatroom(
+                    "group",
+                    this.chatrooms[i]
+                  );
+                } else {
+                  if (
+                    messageData.message.sender.id != this.$store.state.user.id
+                  ) {
+                    this.messagesInChatroom.push(messageData.message);
+                  }
                 }
+              } else {
+                this.reorderChatRoomsWithoutSelectChatroom(
+                  "group",
+                  this.chatrooms[i]
+                );
               }
             }
           }
