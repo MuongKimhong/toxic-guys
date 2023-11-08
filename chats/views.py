@@ -7,8 +7,8 @@ from itertools import chain
 
 from users.utils import token_verification
 from users.models import User
-from chats.models import ChatRoom, Message
-from chats.models import GroupChatRoom, GroupMessage
+from chats.models import ChatRoom, Message, MessageImage
+from chats.models import GroupChatRoom, GroupMessage, GroupMessageImage
 from groups.models import Group
 import json
 

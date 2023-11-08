@@ -353,6 +353,25 @@ export default {
         input.remove();
       }
       input.click();
+    },
+
+    sendMessageAsImages: function () {
+      if (this.selectedImages.length == 0) return;
+      
+      var formData = new FormData();
+      formData.append("room_id", this.selectedChatRoom.id);
+      formData.append("images", JSON.stringify(this.selectedImages));
+
+      axios.post("api-chats/send-message-as-image/", formData, {
+        headers: {
+          "content-type": "multipart/form-data",
+          Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+        },
+      })
+      .then(() => {
+
+      })
+      .catch(() => {})
     }
   },
 };
