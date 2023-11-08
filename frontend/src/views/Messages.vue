@@ -195,9 +195,19 @@ export default {
           this.messagesInChatroom.push(res.data["message"]);
           this.reorderChatRooms("user");
 
+          for (const i in this.chatrooms) {
+            if (this.chatrooms[i].type == "user") {
+              if (this.chatrooms[i].id === this.selectedChatRoom.id) {
+                this.chatrooms[i]["last_message_text"] = res.data["message"].text;
+                this.chatrooms[i]["last_message_sender_name"] = res.data["message"].sender.username;
+                break
+              }
+            }
+          }
+
           var webSocketData = {
             chatroomId: this.selectedChatRoom.id,
-            message: res.data["message"],
+            message: res.data["message"]
           };
           this.$webSocket.emit("send-message", JSON.stringify(webSocketData));
         });
@@ -223,6 +233,16 @@ export default {
           this.messageText = "";
           this.messagesInChatroom.push(res.data["message"]);
           this.reorderChatRooms("group");
+
+          for (const i in this.chatrooms) {
+            if (this.chatrooms[i].type == "group") {
+              if (this.chatrooms[i].id === this.selectedChatRoom.id) {
+                this.chatrooms[i]["last_message_text"] = res.data["message"].text;
+                this.chatrooms[i]["last_message_sender_name"] = res.data["message"].sender.username;
+                break
+              }
+            }
+          }
 
           var webSocketData = {
             groupChatroomId: this.selectedChatRoom.id,
@@ -259,6 +279,8 @@ export default {
                 if (this.selectedChatRoom.id === messageData.chatroomId) {
                   if ( messageData.message.sender.id != this.$store.state.user.id) {
                     this.messagesInChatroom.push(messageData.message);
+                    this.chatrooms[i]["last_message_text"] = messageData.message.text;
+                    this.chatrooms[i]["last_message_sender_name"] = messageData.message.sender.username;
                   }
                 } 
                 else {
@@ -283,6 +305,8 @@ export default {
                 if (this.selectedChatRoom.id === messageData.groupChatroomId) {
                   if ( messageData.message.sender.id != this.$store.state.user.id) {
                     this.messagesInChatroom.push(messageData.message);
+                    this.chatrooms[i]["last_message_text"] = messageData.message.text;
+                    this.chatrooms[i]["last_message_sender_name"] = messageData.message.sender.username;
                   }
                 } 
                 else {
