@@ -4,7 +4,7 @@
     style="background-color: rgb(95, 95, 95); height: 800px"
     class="navigation-drawer"
   >
-    <v-list density="compact" nav>
+    <v-list nav>
       <v-list-item
         v-for="(chatroom, index) in chatrooms"
         :key="index"
@@ -23,7 +23,7 @@
             <v-avatar v-else size="36" color="white">
               <v-img :src="chatroom.creator.profile_url"></v-img>
             </v-avatar>
-            <span class="white--text ml-2">
+            <span class="white--text ml-2" style="font-size: 13px">
               {{ chatroom.creator.username }}
             </span>
           </div>
@@ -50,7 +50,7 @@
               ></v-img>
               <v-img v-else :src="chatroom.group.profile"></v-img>
             </v-avatar>
-            <span class="white--text ml-2">
+            <span class="white--text ml-2" style="font-size: 13px">
               {{ chatroom.group.name }}
             </span>
           </div>
