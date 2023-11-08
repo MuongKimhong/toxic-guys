@@ -11,6 +11,7 @@ class ChatRoom(models.Model):
     _type = models.CharField(max_length=10, default="user")
     last_message_created_date = models.DateTimeField(blank=True, null=True) # use to sort chatroom in GetChatRoomList API
     last_message_text = models.TextField(blank=True)
+    last_message_sender_name = models.TextField(blank=True)
 
     def serialize(self):
         return {
@@ -20,7 +21,8 @@ class ChatRoom(models.Model):
             "created_date": date_format(self.created_date),
             "total_messages": Message.objects.filter(chatroom__id=self.id).count(),
             "type": self._type,
-            "last_message_text": self.last_message_text
+            "last_message_text": self.last_message_text,
+            "last_message_sender_name": self.last_message_sender_name
         }
 
 
@@ -63,6 +65,7 @@ class GroupChatRoom(models.Model):
     _type = models.CharField(max_length=10, default="group")
     last_message_created_date = models.DateTimeField(blank=True, null=True) # use to sort chatroom in GetChatRoomList API
     last_message_text = models.TextField(blank=True)
+    last_message_sender_name = models.TextField(blank=True)
 
     def serialize(self):
         return {
@@ -71,7 +74,8 @@ class GroupChatRoom(models.Model):
             "members": [member.serialize() for member in self.members.all()],
             "created_date": date_format(self.created_date),
             "type": self._type,
-            "last_message_text": self.last_message_text
+            "last_message_text": self.last_message_text,
+            "last_message_sender_name": self.last_message_sender_name
         }
 
 
