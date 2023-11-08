@@ -192,8 +192,13 @@ export default {
         .then((res) => {
           this.messageText = "";
           this.messagesInChatroom.push(res.data["message"]);
-          this.$webSocket.emit("send-message", res.data["message"]);
           this.reorderChatRooms("user");
+
+          var webSocketData = {
+            chatroomId: this.selectedChatRoom.id,
+            message: res.data["message"],
+          };
+          this.$webSocket.emit("send-message", JSON.stringify(webSocketData));
         });
     },
 
@@ -247,8 +252,33 @@ export default {
 
     listenToWebSocketEventHandling: function () {
       this.$webSocket.on("new-message", (message) => {
-        if (message.receiver.id === this.$store.state.user.id) {
-          this.messagesInChatroom.push(message);
+        var messageData = JSON.parse(message);
+
+        for (const i in this.chatrooms) {
+          if (this.chatrooms[i].type === "user") {
+            if (this.chatrooms[i].id === messageData.chatroomId) {
+              if (this.selectedChatRoom.type === "user") {
+                if (this.selectedChatRoom.id != messageData.chatroomId) {
+                  this.reorderChatRoomsWithoutSelectChatroom(
+                    "user",
+                    this.chatrooms[i]
+                  );
+                } else {
+                  if (
+                    messageData.message.sender.id != this.$store.state.user.id
+                  ) {
+                    this.messagesInChatroom.push(messageData.message);
+                  }
+                  console.log(messageData);
+                }
+              } else {
+                this.reorderChatRoomsWithoutSelectChatroom(
+                  "user",
+                  this.chatrooms[i]
+                );
+              }
+            }
+          }
         }
       });
 
@@ -260,7 +290,6 @@ export default {
             if (this.chatrooms[i].id === messageData.groupChatroomId) {
               if (this.selectedChatRoom.type === "group") {
                 if (this.selectedChatRoom.id != messageData.groupChatroomId) {
-                  // this.reorderChatRooms("group");
                   this.reorderChatRoomsWithoutSelectChatroom(
                     "group",
                     this.chatrooms[i]
