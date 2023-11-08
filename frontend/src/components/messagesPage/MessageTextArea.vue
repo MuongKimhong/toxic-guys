@@ -31,9 +31,22 @@
         </span>
       </div>
       <div v-else>
-        <span v-if="message.text != ''" class="message-text-right">{{
-          message.text
-        }}</span>
+        <div
+          v-if="message.images.length > 0"
+          class="d-flex"
+          style="width: 200px; height: 60px; text-align: right"
+        >
+          <v-img
+            class="ml-auto"
+            :width="50"
+            v-for="(image, i) in message.images"
+            :key="i"
+            :src="image.image"
+          ></v-img>
+        </div>
+        <span v-if="message.text != ''" class="message-text-right"
+          >{{ message.text }}
+        </span>
       </div>
     </div>
     <div class="text" style=""></div>

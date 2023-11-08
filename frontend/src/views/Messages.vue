@@ -110,7 +110,12 @@ export default {
           this.sendMessage();
         }
         else if (this.selectedImages.length > 0) {
-          this.sendMessageAsImages();
+          if (this.selectedChatRoom.type == "user") {
+            this.sendMessageAsImages();
+          }
+          else {
+            this.sendMessageAsImagesForGroup();
+          }
         }
       }
     });
@@ -166,7 +171,12 @@ export default {
           this.sendMessageForChatRoom();
         }
       } else if (this.selectedChatRoom.type === "group") {
-        this.sendMessageForGroupChatRoom();
+        if (this.selectedImages.length > 0) {
+          this.sendMessageAsImagesForGroup();
+        }
+        else {
+          this.sendMessageForGroupChatRoom();
+        }
       }
     },
 
@@ -412,6 +422,50 @@ export default {
           message: res.data["message"]
         };
         this.$webSocket.emit("send-message", JSON.stringify(webSocketData));
+
+        this.selectedImages = []; 
+      })
+      .catch(() => {})
+    },
+
+    sendMessageAsImagesForGroup: function () {
+      if (this.selectedImages.length == 0) return;
+
+      var formData = new FormData();
+      formData.append("room_id", this.selectedChatRoom.id);
+      formData.append("text", this.messageText);
+      formData.append("total_images", this.selectedImages.length);
+      
+      for (const i in this.selectedImages) {
+        formData.append(`image${i}`, this.selectedImages[i]["source"]);
+      }
+
+      axios.post("api-chats/send-message-as-image-for-group/", formData, {
+        headers: {
+          "content-type": "multipart/form-data",
+          Authorization: `Bearer ${this.$store.state.user.accessToken}`,
+        },
+      })
+      .then((res) => {
+        this.messageText = "";
+          this.messagesInChatroom.push(res.data["message"]);
+          this.reorderChatRooms("group", res.data["message"]);
+
+          for (const i in this.chatrooms) {
+            if (this.chatrooms[i].type == "group") {
+              if (this.chatrooms[i].id === this.selectedChatRoom.id) {
+                this.chatrooms[i]["last_message_text"] = res.data["message"].text;
+                this.chatrooms[i]["last_message_sender_name"] = res.data["message"].sender.username;
+                break;
+              }
+            }
+          }
+
+          var webSocketData = {
+            groupChatroomId: this.selectedChatRoom.id,
+            message: res.data["message"],
+          };
+          this.$webSocket.emit("send-message-group", JSON.stringify(webSocketData));
 
         this.selectedImages = []; 
       })

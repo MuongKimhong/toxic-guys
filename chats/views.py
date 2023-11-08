@@ -146,21 +146,30 @@ class UpdateMessage(DeleteMessage):
 class SendMessageAsImage(APIView):
     permission_classes = [ IsAuthenticated ]
     parser_classes = [ parsers.MultiPartParser ]
+    chatroom_model = ChatRoom
+    message_image_model = MessageImage
+    _type = "user"
 
     def post(self, request):
-        chatroom = ChatRoom.objects.get(id=request.data["room_id"])
+        chatroom = self.chatroom_model.objects.get(id=request.data["room_id"])
         total_images = request.data["total_images"]
 
-        message = Message.objects.create(
-            sender_id=token_verification(request), 
-            chatroom_id=chatroom.id, 
-            text=request.data["text"],
-            receiver_id=request.data["receiver_id"]
-        ) 
-
+        if self._type == "user":
+            message = Message.objects.create(
+                sender_id=token_verification(request), 
+                chatroom_id=chatroom.id, 
+                text=request.data["text"],
+                receiver_id=request.data["receiver_id"]
+            ) 
+        else:
+            message = GroupMessage.objects.create(
+                sender_id=token_verification(request), 
+                group_chatroom_id=chatroom.id, 
+                text=request.data["text"]
+            ) 
         for i in range(int(total_images)):
             if isinstance(request.data[f"image{i}"], InMemoryUploadedFile):
-                message_image = MessageImage.objects.create(image=request.data[f"image{i}"])
+                message_image = self.message_image_model.objects.create(image=request.data[f"image{i}"])
                 message.images.add(message_image)
               
         chatroom.last_message_text = message.text if message.text != "" else "sent a photo"
@@ -177,3 +186,9 @@ class SendMessageAsImage(APIView):
         chatroom.last_message_created_date = message.created_date
         chatroom.save()
         return Response({"message": message.serialize()}, status=200)
+
+
+class SendMessageAsImageForGroupChatRoom(SendMessageAsImage):
+    chatroom_model = GroupChatRoom
+    message_image_model = GroupMessageImage
+    _type = "group"
