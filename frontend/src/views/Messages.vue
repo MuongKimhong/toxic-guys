@@ -171,7 +171,8 @@ export default {
 
       if (this.selectedChatRoom.creator.id == this.$store.state.user.id) {
         receiverId = this.selectedChatRoom.member.id;
-      } else {
+      } 
+      else {
         receiverId = this.selectedChatRoom.creator.id;
       }
 
@@ -227,10 +228,7 @@ export default {
             groupChatroomId: this.selectedChatRoom.id,
             message: res.data["message"],
           };
-          this.$webSocket.emit(
-            "send-message-group",
-            JSON.stringify(webSocketData)
-          );
+          this.$webSocket.emit("send-message-group", JSON.stringify(webSocketData));
         });
     },
 
@@ -258,24 +256,17 @@ export default {
           if (this.chatrooms[i].type === "user") {
             if (this.chatrooms[i].id === messageData.chatroomId) {
               if (this.selectedChatRoom.type === "user") {
-                if (this.selectedChatRoom.id != messageData.chatroomId) {
-                  this.reorderChatRoomsWithoutSelectChatroom(
-                    "user",
-                    this.chatrooms[i]
-                  );
-                } else {
-                  if (
-                    messageData.message.sender.id != this.$store.state.user.id
-                  ) {
+                if (this.selectedChatRoom.id === messageData.chatroomId) {
+                  if ( messageData.message.sender.id != this.$store.state.user.id) {
                     this.messagesInChatroom.push(messageData.message);
                   }
-                  console.log(messageData);
+                } 
+                else {
+                  this.reorderChatRoomsWithoutSelectChatroom("user", this.chatrooms[i]);
                 }
-              } else {
-                this.reorderChatRoomsWithoutSelectChatroom(
-                  "user",
-                  this.chatrooms[i]
-                );
+              } 
+              else {
+                this.reorderChatRoomsWithoutSelectChatroom("user", this.chatrooms[i]);
               }
             }
           }
@@ -289,23 +280,17 @@ export default {
           if (this.chatrooms[i].type === "group") {
             if (this.chatrooms[i].id === messageData.groupChatroomId) {
               if (this.selectedChatRoom.type === "group") {
-                if (this.selectedChatRoom.id != messageData.groupChatroomId) {
-                  this.reorderChatRoomsWithoutSelectChatroom(
-                    "group",
-                    this.chatrooms[i]
-                  );
-                } else {
-                  if (
-                    messageData.message.sender.id != this.$store.state.user.id
-                  ) {
+                if (this.selectedChatRoom.id === messageData.groupChatroomId) {
+                  if ( messageData.message.sender.id != this.$store.state.user.id) {
                     this.messagesInChatroom.push(messageData.message);
                   }
+                } 
+                else {
+                  this.reorderChatRoomsWithoutSelectChatroom("group", this.chatrooms[i]);
                 }
-              } else {
-                this.reorderChatRoomsWithoutSelectChatroom(
-                  "group",
-                  this.chatrooms[i]
-                );
+              } 
+              else {
+                this.reorderChatRoomsWithoutSelectChatroom("group", this.chatrooms[i]);
               }
             }
           }
