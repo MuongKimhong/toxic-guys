@@ -10,4 +10,5 @@ urlpatterns = [
     path("get-messages-in-group-chatroom/", GetMessageInGroupChatRoom.as_view()),
     path("delete-message/", DeleteMessage.as_view()),
     path("update-message/", UpdateMessage.as_view()),
+    path("send-message-as-image/", SendMessageAsImage.as_view())
 ]

@@ -10,7 +10,7 @@ from users.models import User
 from chats.models import ChatRoom, Message
 from chats.models import GroupChatRoom, GroupMessage
 from groups.models import Group
-from operator import itemgetter
+import json
 
 
 class GetChatRoomList(APIView):
@@ -140,3 +140,20 @@ class UpdateMessage(DeleteMessage):
     def action(self, message, request):
         message.text = request.data.get("new_message_text")
         message.save()
+
+
+class SendMessageAsImage(APIView):
+    permission_classes = [ IsAuthenticated ]
+    parser_classes = [ parsers.MultiPartParser ]
+
+    def post(self, request):
+        chatroom = ChatRoom.objects.get(id=request.data["room_id"])
+        images = json.loads(request.data["images"])
+
+        message = Message.objects.create(sender_id=token_verification(request), chatroom_id=chatroom.id)       
+
+        for image in images:
+            message_image = MessageImage.objects.create(image=image)
+            message.images.add(message_image)
+
+        return Response({"message": message.serialize()}, status=200)
