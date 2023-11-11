@@ -22,10 +22,13 @@
           <span class="text-capitalize mr-1 white--text">Messages</span>
           <i class="fas fa-comments white--text"></i>
         </v-btn>
-        <v-btn text>
+        <!-- <v-btn
+          text
+          @click="$router.push({ name: 'Anonymous' }).catch(() => {})"
+        >
           <span class="text-capitalize mr-1 white--text">Anonymous</span>
           <i class="fas fa-question white--text"></i>
-        </v-btn>
+        </v-btn> -->
         <v-btn text @click="notificationBtnOnClick()" id="notification-btn">
           <span class="text-capitalize mr-1 white--text"> Notifications </span>
           <v-badge

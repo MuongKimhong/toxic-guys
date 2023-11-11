@@ -11,6 +11,7 @@ import Messages from "../views/Messages.vue";
 import GroupDetail from "../views/GroupDetail.vue";
 import FindConnection from "../views/FindConnection.vue";
 import CreateNewGroup from "../views/CreateNewGroup.vue";
+import Anonymous from "../views/Anonymous.vue";
 
 Vue.use(VueRouter)
 
@@ -18,7 +19,12 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+  },
+  {
+    path: '/anonymous',
+    name: "Anonymous",
+    component: Anonymous
   },
   {
     path: "/messages",

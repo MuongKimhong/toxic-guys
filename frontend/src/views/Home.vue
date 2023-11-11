@@ -196,11 +196,14 @@ export default {
   }),
 
   created() {
-    document.addEventListener("keyup", (event) => {
-      if (event.key === "Enter") {
-        this.searchUsersAcceptAnonymousMessage();
-      }
-    });
+    // document.addEventListener("keyup", (event) => {
+    //   if (event.key === "Enter") {
+    //     this.searchUsersAcceptAnonymousMessage();
+    //   }
+    // });
+
+    if (this.$store.state.user.accessToken == null) this.$router.push({ name: "SignIn" });
+    else this.$router.push({ name: "Messages" })
   },
 
   methods: {
