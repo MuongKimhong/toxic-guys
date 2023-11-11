@@ -18,7 +18,7 @@
 
       <!-- signed in -->
       <div v-if="$store.state.user.accessToken != null">
-        <v-btn text @click="$router.push({ name: 'Messages' })">
+        <v-btn text @click="$router.push({ name: 'Messages' }).catch(() => {})">
           <span class="text-capitalize mr-1 white--text">Messages</span>
           <i class="fas fa-comments white--text"></i>
         </v-btn>
@@ -37,7 +37,7 @@
           </v-badge>
           <i v-else class="fas fa-bell white--text"></i>
         </v-btn>
-        <v-btn text @click="$router.push({ name: 'Profile' })">
+        <v-btn text @click="$router.push({ name: 'Profile' }).catch(() => {})">
           <span class="text-capitalize mr-1 white--text">Profile</span>
           <i class="fas fa-user-circle white--text"></i>
         </v-btn>
@@ -171,7 +171,7 @@
       <div
         v-if="$store.state.user.accessToken == null && $route.name != 'SignIn'"
       >
-        <v-btn text @click="$router.push({ name: 'SignIn' })">
+        <v-btn text @click="$router.push({ name: 'SignIn' }).catch(() => {})">
           <span class="text-capitalize white--text">Sign In </span>
         </v-btn>
       </div>
@@ -216,7 +216,7 @@ export default {
         .then((res) => {
           this.$store.commit("deleteUserCredential");
           if (res.data["success"]) {
-            this.$router.push({ name: "SignIn" });
+            this.$router.push({ name: "SignIn" }).catch(() => {});
           }
         })
         .catch(() => {});
