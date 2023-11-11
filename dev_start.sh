@@ -2,10 +2,10 @@
 
 git pull origin master
 
-ttab "cd ~/Development/toxic_guys/frontend; npm run serve"
+ttab "cd $PWD/frontend; npm run serve"
 
 ttab "source virtual_environment/bin/activate; python3 manage.py runserver" 
 
-ttab "cd ~/Development/toxic_guys/websocket; npm start" 
+ttab "cd $PWD/websocket; npm start" 
 
 code .
