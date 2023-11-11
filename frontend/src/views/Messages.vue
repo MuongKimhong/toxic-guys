@@ -27,7 +27,10 @@
               />
               <v-card class="d-flex flex-column message-area">
                 <UserDetailNavbar :chatroom="selectedChatRoom" />
-                <MessageTextArea :messages="messagesInChatroom" />
+                <MessageTextArea
+                  :messages="messagesInChatroom"
+                  @deleteMessage="deleteMessageEvent"
+                />
                 <v-spacer></v-spacer>
 
                 <!-- select images to upload -->
@@ -125,6 +128,10 @@ export default {
   },
 
   methods: {
+    deleteMessageEvent: function (index) {
+      this.messagesInChatroom.splice(index, 1);
+    },
+
     sendMessageIconClick: function () {},
 
     chatroomOnClick: function (chatroomObject) {
