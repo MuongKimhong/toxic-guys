@@ -23,15 +23,9 @@ else
 	sudo npm install ttab -g	
 fi
 
-backend_command="cd $PWD/toxic_guys;"\
-				"python3 -m venv virtual_environment;"\
-				"source virtual_environment/bin/activate;"\
-				"python3 manage.py makemigrations;"\
-				"python3 manage.py migrate;"\
-				"python3 manage.py runserver"
 
-ttab "cd $PWD/toxic_guys/frontend; npm install; npm run serve"
+ttab "cd $PWD/frontend; npm install; npm run serve"
 
-ttab "$backend_command"
+ttab "cd $PWD; python3 -m venv virtual_environment; source virtual_environment/bin/activate; pip3 install -r requirements.txt; python3 manage.py makemigrations; python3 manage.py migrate; python3 manage.py runserver"
 
-ttab "cd $PWD/toxic_guys/websocket; npm install; npm start"
+ttab "cd $PWD/websocket; npm install; npm start"
